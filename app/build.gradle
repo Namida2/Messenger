@@ -31,6 +31,12 @@ android {
 
 dependencies {
 
+    //Rx
+    implementation "io.reactivex.rxjava3:rxjava:3.0.13"
+    implementation 'com.jakewharton.rxbinding4:rxbinding:4.0.0'
+
+    //Firebase
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
     implementation platform('com.google.firebase:firebase-bom:28.2.0')
     implementation 'com.google.firebase:firebase-firestore'
 

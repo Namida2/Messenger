@@ -1,0 +1,86 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottomSheetDialog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/fields"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:textSize="24sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/montserrat_semi_bold"
+            android:layout_marginStart="16sp"
+            android:layout_marginEnd="16sp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="24dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Войдите, чтобы продолжить..."
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/montserrat_light"
+            android:layout_marginStart="16sp"
+            android:layout_marginEnd="16sp"
+            android:layout_marginBottom="36dp"
+            />
+
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:hint="Email"
+            android:textColorHint="@android:color/darker_gray"
+            android:drawableStart="@drawable/ic_email"
+            style="@style/editTextStyle"
+            android:layout_marginBottom="12dp"
+            />
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="Password"
+            android:textColorHint="@android:color/darker_gray"
+            android:drawableStart="@drawable/ic_lock"
+            style="@style/editTextStyle"
+            android:layout_marginBottom="16dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="bottom">
+
+            <Button
+                android:id="@+id/log_in_button"
+                style="@style/buttonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/montserrat_light"
+                android:text="Войти"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/new_account_button"
+                style="@style/empty_button_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="36dp"
+                android:text="У меня еще нет аккаунта"
+                android:textColor="@color/black" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

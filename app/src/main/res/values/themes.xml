@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Messenger" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Messenger" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -13,4 +13,77 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+
+    <style name="editTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:minHeight">46dp</item>
+        <item name="android:background">@drawable/bg_edit_text</item>
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:layout_marginStart">16sp</item>
+        <item name="android:layout_marginEnd">16sp</item>
+        <item name="android:drawablePadding">8sp</item>
+        <item name="android:fontFamily">@font/montserrat_semi_bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="buttonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Button</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/montserrat_light</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:minHeight">58dp</item>
+        <item name="shapeAppearance">@style/ThemeOverlay.App.Button.Shape</item>
+        <item name="rippleColor">@color/white</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Button.Shape" parent="ShapeAppearance.MaterialComponents.Test">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">90dp</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Button" parent="">
+        <item name="colorPrimary">@color/black</item>
+    </style>
+
+    <style name="empty_button_style" parent="Widget.MaterialComponents.Button">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.EmptyButton</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/montserrat_light</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:minHeight">58dp</item>
+        <item name="shapeAppearance">@style/ThemeOverlay.App.Button.Shape</item>
+        <item name="rippleColor">@color/black</item>
+    </style>
+    <style name="ThemeOverlay.App.EmptyButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="colorPrimary">@color/white</item>
+        <item name="strokeColor">@color/black</item>
+        <item name="strokeWidth">0.5dp</item>
+    </style>
+
+    <style name="errorButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/bg_error_dialog_button</item>
+        <item name="rippleColor">@color/black</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.ErrorButtonStyle</item>
+    </style>
+    <style name="ThemeOverlay.App.ErrorButtonStyle" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="colorPrimary">@color/white</item>
+    </style>
+
+    <style name="alertDialogStyle"
+        parent="Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style/animErrorAlertDialogStyle</item>
+    </style>
+    <style name="animErrorAlertDialogStyle">
+        <item name="android:windowEnterAnimation">@anim/dialog_show</item>
+        <item name="android:windowExitAnimation">@anim/dialog_hide</item>
+    </style>
+
+
 </resources>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/black"
+            app:navigationIcon="@drawable/ic_arrow"
+            android:paddingStart="16dp"
+            app:titleMarginStart="32dp"
+            app:titleTextColor="@color/white"/>
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center"
+            android:text="Регистрация"
+            android:gravity="center"
+            android:fontFamily="@font/montserrat_semi_bold"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+    <LinearLayout
+        android:id="@+id/fields"
+        android:layout_below="@id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome"
+            android:textSize="24sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/montserrat_semi_bold"
+            android:layout_marginStart="16sp"
+            android:layout_marginEnd="16sp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="24dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Заполните слудующие поля..."
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/montserrat_light"
+            android:layout_marginStart="16sp"
+            android:layout_marginEnd="16sp"
+            android:layout_marginBottom="36dp"
+            />
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:hint="Name"
+            android:textColorHint="@android:color/darker_gray"
+            android:drawableStart="@drawable/ic_profile_empty"
+            style="@style/editTextStyle"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_edit_text"
+            />
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:hint="Email"
+            android:textColorHint="@android:color/darker_gray"
+            android:drawableStart="@drawable/ic_email"
+            style="@style/editTextStyle"
+            android:layout_marginBottom="12dp"
+            />
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="Password"
+            android:textColorHint="@android:color/darker_gray"
+            android:drawableStart="@drawable/ic_lock"
+            style="@style/editTextStyle"
+            android:layout_marginBottom="16dp"
+            />
+        <EditText
+            android:id="@+id/confirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="Confirm password"
+            android:textColorHint="@android:color/darker_gray"
+            android:drawableStart="@drawable/ic_lock"
+            style="@style/editTextStyle"
+            android:layout_marginBottom="16dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom">
+            <Button
+                android:id="@+id/registration_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/buttonStyle"
+                android:text="Зарегестрироваться"
+                android:layout_marginBottom="42dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>
