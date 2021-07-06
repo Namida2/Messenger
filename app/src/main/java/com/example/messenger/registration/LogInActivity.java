@@ -20,7 +20,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import tools.ErrorAlertDialog;
 import tools.NetworkConnection;
 
-import static tools.GlobalConstants.TAG;
+import static tools.Const.TAG;
 
 public class LogInActivity extends AppCompatActivity implements LogInActivityInterface.View {
 
@@ -42,8 +42,8 @@ public class LogInActivity extends AppCompatActivity implements LogInActivityInt
             .subscribe(unit -> {
                     if(NetworkConnection.isNetworkConnected(this))
                         presenter.logIn(
-                            ((TextView) findViewById(R.id.email)).getText().toString(),
-                            ((TextView) findViewById(R.id.password)).getText().toString()
+                            ((TextView) findViewById(R.id.email_edit_text)).getText().toString(),
+                            ((TextView) findViewById(R.id.password_edit_text)).getText().toString()
                         );
                     else onError(ErrorAlertDialog.INTERNET_CONNECTION);
                 }, error -> {
@@ -62,15 +62,12 @@ public class LogInActivity extends AppCompatActivity implements LogInActivityInt
                 }, error -> {
                     Log.d(TAG, "LogInActivity.onCreate: " + error.getMessage());
                     onError(ErrorAlertDialog.SOMETHING_WRONG);
-                }
-                , () -> {});
+                }, () -> {});
     }
-
     @Override
     public void startRegistrationActivity() {
         startActivity(new Intent(this, RegistrationActivity.class));
     }
-
     @Override
     public void onSuccess() {
         startActivity(new Intent(this, MainActivity.class));

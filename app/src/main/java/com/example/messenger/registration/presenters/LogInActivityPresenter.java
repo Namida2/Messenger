@@ -7,7 +7,7 @@ import com.example.messenger.registration.models.LogInActivityModel;
 
 import tools.ErrorAlertDialog;
 
-import static tools.GlobalConstants.TAG;
+import static tools.Const.TAG;
 
 public class LogInActivityPresenter implements LogInActivityInterface.Presenter {
 
