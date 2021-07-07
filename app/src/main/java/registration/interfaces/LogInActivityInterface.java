@@ -1,4 +1,4 @@
-package com.example.messenger.registration.interfaces;
+package registration.interfaces;
 
 import com.google.firebase.auth.FirebaseAuth;
 

@@ -1,4 +1,4 @@
-package com.example.messenger.registration;
+package registration;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,8 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.messenger.MainActivity;
 import com.example.messenger.R;
-import com.example.messenger.registration.interfaces.RegistrationActivityInterface;
-import com.example.messenger.registration.presenters.RegistrationActivityPresenter;
+import registration.interfaces.RegistrationActivityInterface;
+import registration.presenters.RegistrationActivityPresenter;
 import com.jakewharton.rxbinding4.view.RxView;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 

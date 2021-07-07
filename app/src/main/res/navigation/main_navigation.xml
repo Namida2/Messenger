@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="mainFragment.MainFragment"
+        android:label="MainFragment" >
+        <action
+            android:id="@+id/action_mainFragment_to_messengerFragment"
+            app:destination="@id/messengerFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_profileFragment2"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/messengerFragment"
+        android:name="messengerFragment.MessengerFragment"
+        android:label="MessengerFragment" >
+        <action
+            android:id="@+id/action_messengerFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_messengerFragment_to_profileFragment2"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="profileFragment.ProfileFragment"
+        android:label="ProfileFragment" >
+        <action
+            android:id="@+id/action_profileFragment2_to_messengerFragment"
+            app:destination="@id/messengerFragment" />
+        <action
+            android:id="@+id/action_profileFragment2_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+</navigation>

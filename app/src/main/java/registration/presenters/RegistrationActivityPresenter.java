@@ -1,11 +1,10 @@
-package com.example.messenger.registration.presenters;
+package registration.presenters;
 
 import android.util.Log;
 
 import com.example.messenger.User;
-import com.example.messenger.registration.interfaces.RegistrationActivityInterface;
-import com.example.messenger.registration.models.RegistrationActivityModel;
-import com.google.firebase.firestore.SetOptions;
+import registration.interfaces.RegistrationActivityInterface;
+import registration.models.RegistrationActivityModel;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,14 +23,13 @@ public class RegistrationActivityPresenter implements RegistrationActivityInterf
         this.view = view;
         if (model == null) model = new RegistrationActivityModel();
     }
-
     @Override
     public void registrate(String name, String email, String password, String confirmPassword) {
         if( isValid(email, password, confirmPassword) ) {
             model.getFirebaseAuth().fetchSignInMethodsForEmail(email).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     if (task.getResult().getSignInMethods().isEmpty()) {
-                        User user = new User();
+                        User user = User.getCurrentUser();
                         user.setName(name);
                         user.setEmail(email.toLowerCase());
                         user.setPassword(password);
@@ -46,7 +44,6 @@ public class RegistrationActivityPresenter implements RegistrationActivityInterf
             });
         }
     }
-
     private void writeNewUser(User user) {
         model.getFirebaseAuth().createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
             .addOnCompleteListener(taskRegistration -> {
@@ -67,7 +64,6 @@ public class RegistrationActivityPresenter implements RegistrationActivityInterf
                 }
             });
     }
-
     public boolean isValid(String email, String password, String confirmPassword) {
         if( !isEmailValid(email) ) {
             Log.d(TAG, "Email is invalid");

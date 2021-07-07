@@ -1,6 +1,6 @@
-package com.example.messenger.registration.models;
+package registration.models;
 
-import com.example.messenger.registration.interfaces.RegistrationActivityInterface;
+import registration.interfaces.RegistrationActivityInterface;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 

@@ -1,9 +1,9 @@
-package com.example.messenger.registration.presenters;
+package registration.presenters;
 
 import android.util.Log;
 
-import com.example.messenger.registration.interfaces.LogInActivityInterface;
-import com.example.messenger.registration.models.LogInActivityModel;
+import registration.interfaces.LogInActivityInterface;
+import registration.models.LogInActivityModel;
 
 import tools.ErrorAlertDialog;
 

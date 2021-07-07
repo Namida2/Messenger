@@ -1,4 +1,4 @@
-package com.example.messenger.registration;
+package registration;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import com.example.messenger.MainActivity;
 import com.example.messenger.R;
-import com.example.messenger.registration.interfaces.LogInActivityInterface;
-import com.example.messenger.registration.presenters.LogInActivityPresenter;
+import registration.interfaces.LogInActivityInterface;
+import registration.presenters.LogInActivityPresenter;
 import com.jakewharton.rxbinding4.view.RxView;
 
 import java.util.concurrent.TimeUnit;
