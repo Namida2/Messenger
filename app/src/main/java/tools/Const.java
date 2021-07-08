@@ -2,13 +2,30 @@ package tools;
 
 public class Const {
     public static final String TAG = "MyLogTag";
+    public static final String EXTRA_TAG_POSITION = "position";
 
-    public class CollectionUsers {
+    public static class CollectionUsers {
         public static final String COLLECTION_USERS = "users";
         public static final String COLLECTION_MESSENGER = "messenger";
-        public static final String FIELD_HAS_CHAT_WITH = "has_chat_with";
-        public static final String FIELD_NAMES = "names";
+        public static final String FIELD_CHATS = "chats";
+        public static final String FIELD_CHATS_IDS = "chats_ids";
+    }
+    public static class CollectionChats {
+        public static final String TYPE_DIALOG = "dialog";
+        public static final String COLLECTION_CHATS = "chats";
+        public static final String FIELD_TYPE = "type";
+        public static final String FIELD_USERS = "users";
+        public static final String FIELD_CHAT_NAME = "chat_name";
+        public static final String FIELD_LAST_MESSAGE_AT = "last_message_at";
+        public static final String FIELD_MESSAGES_IN_CHAT = "messages_in_chat";
+    }
 
+    public static class CollectionMessages {
+        public static final String COLLECTION_MESSAGES = "messages";
+        public static final String FIELD_TIME = "time";
+        public static final String FIELD_MESSAGE = "message";
+        public static final String FIELD_AUTHOR_EMAIL = "chat_name";
     }
 
 }
+

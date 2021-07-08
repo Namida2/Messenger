@@ -6,10 +6,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/users_recycler_view"
+        android:id="@+id/chats_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/layout_user_in_messenger" />
+        tools:listitem="@layout/layout_chat" />
+
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

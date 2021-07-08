@@ -1,5 +1,6 @@
 package messengerFragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,8 +9,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.messenger.Chat;
+import com.example.messenger.ChatActivity;
 import com.example.messenger.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
 import messengerFragment.interfaces.MessengerFragmentInterface;
 import messengerFragment.presenters.MessengerFragmentPresenter;
 import tools.ErrorAlertDialog;
+
+import static tools.Const.EXTRA_TAG_POSITION;
 
 public class MessengerFragment extends Fragment implements MessengerFragmentInterface.View {
 
@@ -26,30 +30,37 @@ public class MessengerFragment extends Fragment implements MessengerFragmentInte
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = new MessengerFragmentPresenter(this);
+        View contentView = presenter.getView();
+        if(contentView != null) return;
+        contentView = View.inflate(getContext(), R.layout.fragment_messenger, null);
+        presenter.setRecyclerView(contentView.findViewById(R.id.chats_recycler_view));
+        presenter.setView(contentView);
     }
-
     @Nullable
     @org.jetbrains.annotations.Nullable
     @Override
     public View onCreateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        View contentView = presenter.getView();
-        if(contentView != null) return contentView;
-
-        contentView = View.inflate(container.getContext(), R.layout.fragment_messenger, null);
-        RecyclerView recyclerView = contentView.findViewById(R.id.users_recycler_view);
-
-        return contentView;
+        return presenter.getView();
     }
-
+    @Override
+    public void startChatActivity(int position) {
+        Intent intent = new Intent(getActivity(), ChatActivity.class);
+        intent.putExtra(EXTRA_TAG_POSITION, position);
+        startActivity(new Intent(getActivity(), ChatActivity.class));
+    }
     @Override
     public void onSuccess() {
-
+        presenter.getAdapter().notifyDataSetChanged();
     }
-
     @Override
     public void onError(int errorCode) {
         if(!ErrorAlertDialog.isIsExist() && getActivity() != null)
             ErrorAlertDialog.getInstance(errorCode)
                 .show(getActivity().getSupportFragmentManager(), "");
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter.onResume();
     }
 }
