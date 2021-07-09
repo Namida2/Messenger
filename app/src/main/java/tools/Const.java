@@ -3,6 +3,8 @@ package tools;
 public class Const {
     public static final String TAG = "MyLogTag";
     public static final String EXTRA_TAG_POSITION = "position";
+    public static final String TIME_DELIMITER = ":";
+    public static final String USER_FIELDS_DELIMITER = ", ";
 
     public static class CollectionUsers {
         public static final String COLLECTION_USERS = "users";

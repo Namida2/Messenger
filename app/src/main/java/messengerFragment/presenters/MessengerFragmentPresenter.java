@@ -13,6 +13,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +52,7 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
 
     @Override
     public void setModelState(UserInterface user) {
+        User.getCurrentUser().setEmail("aa@aa.com"); // delete
         model.getDatabase()
             .collection(COLLECTION_USERS)
             .document("aa@aa.com")
@@ -75,17 +79,17 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
 
                 DocumentSnapshot docSnapshotChat = transaction.get(docRefChat);
                 Chat chat = new Chat();
-                chat.setChatName( (String) docSnapshotChat.getData().get(FIELD_CHAT_NAME));
-                chat.setLastMessageAt( (String) docSnapshotChat.getData().get(FIELD_LAST_MESSAGE_AT));
-                chat.setMessagesInChat( (Long) docSnapshotChat.getData().get(FIELD_MESSAGES_IN_CHAT));
+                chat.setChatId(docSnapshotChat.getId());
                 chat.setType( (String) docSnapshotChat.getData().get(FIELD_TYPE));
+                chat.setChatName( (String) docSnapshotChat.getData().get(FIELD_CHAT_NAME));
+                chat.setMessagesInChat( (Long) docSnapshotChat.getData().get(FIELD_MESSAGES_IN_CHAT));
+                chat.setLastMessageAt( (String) docSnapshotChat.getData().get(FIELD_LAST_MESSAGE_AT));
 
                 List<String> usersInChat = (List<String>) docSnapshotChat.getData().get(FIELD_USERS);
                 for(String userName : usersInChat) {
                     DocumentReference docRefUser = model.getDatabase()
                         .collection(COLLECTION_USERS)
                         .document(userName);
-                    DocumentSnapshot aaaa = transaction.get(docRefUser);
                     User user = transaction.get(docRefUser).toObject(User.class);
                     chat.getUsers().add(transaction.get(docRefUser).toObject(User.class));
                 }
@@ -107,7 +111,7 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
         String chatId;
         for(int i = 0; i < chatsIds.size(); ++i) {
             chatId = chatsIds.get(i);
-            int finalI = i;
+            int position = i;
             model.getDatabase()
                 .collection(COLLECTION_CHATS)
                 .document(chatId)
@@ -116,9 +120,13 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
                     if(task.isSuccessful()) {
                         for(QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
                             Message message = queryDocumentSnapshot.toObject(Message.class);
-                            model.getChats().get(finalI).getMessages()
-                                .add(queryDocumentSnapshot.toObject(Message.class));
+                            message.setId( Long.parseLong(queryDocumentSnapshot.getId()) );
+                            model.getChats().get(position).getMessages().add(message);
                         }
+                        ArrayList<Message> messages = model.getChats().get(position).getMessages();
+                        Collections.sort(model.getChats().get(position).getMessages(),
+                            (message1, message2) -> (int) (message1.getId() - message2.getId()));
+                        messages = model.getChats().get(position).getMessages();
                         onSuccess();
                     } else {
                         Log.d(TAG, "MessengerFragmentPresenter.readMessages: " + task.getException());

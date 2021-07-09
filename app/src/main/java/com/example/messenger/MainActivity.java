@@ -1,5 +1,6 @@
 package com.example.messenger;
 
+
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,11 +26,13 @@ import static tools.Const.TAG;
 
 public class MainActivity extends AppCompatActivity {
 
+
     private BottomNavigationView bottomNavigationView;
     private NavHostFragment navHostFragment;
     private NavHostController navHostController;
     private Disposable disposable;
     private TextView title;
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override

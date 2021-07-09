@@ -8,6 +8,7 @@ public class Chat {
     private String lastMessageAt;
     private Long messagesInChat;
     private String type;
+    private String chatId;
     private ArrayList<User> users;
     private ArrayList<Message> messages;
 
@@ -34,6 +35,9 @@ public class Chat {
     public ArrayList<Message> getMessages() {
         return messages;
     }
+    public String getChatId() {
+        return chatId;
+    }
 
     public void setChatName(String chatName) {
         this.chatName = chatName;
@@ -52,5 +56,8 @@ public class Chat {
     }
     public void setMessages(ArrayList<Message> messages) {
         this.messages = messages;
+    }
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
     }
 }

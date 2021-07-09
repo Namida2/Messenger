@@ -4,12 +4,13 @@ import com.example.messenger.interfaces.UserInterface;
 
 public class User implements UserInterface {
     private String name;
+    private String avatarString;
     private String email;
     private String password;
     private String sex;
     private String status;
     private String city;
-    private Long age;
+    private String age;
     private static final User currentUser = new User();
 
     public String getPassword() {
@@ -18,13 +19,12 @@ public class User implements UserInterface {
     public void setPassword(String password) {
         this.password = password;
     }
-
     public static User getCurrentUser() {
         return currentUser;
     }
 
     @Override
-    public Long getAge() {
+    public String getAge() {
         return age;
     }
     @Override
@@ -47,8 +47,12 @@ public class User implements UserInterface {
     public String getStatus() {
         return status;
     }
+    public String getAvatarString() {
+        return avatarString;
+    }
+
     @Override
-    public void setAge(Long age) {
+    public void setAge(String age) {
         this.age = age;
     }
     @Override
@@ -67,9 +71,11 @@ public class User implements UserInterface {
     public void setSex(String sex) {
         this.sex = sex;
     }
-
     @Override
     public void setStatus(String status) {
         this.status = status;
+    }
+    public void setAvatarString(String avatarString) {
+        this.avatarString = avatarString;
     }
 }

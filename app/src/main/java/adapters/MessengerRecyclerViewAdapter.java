@@ -50,7 +50,7 @@ public class MessengerRecyclerViewAdapter extends RecyclerView.Adapter<Messenger
         public ViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             avatar = itemView.findViewById(R.id.avatar_image_view);
-            chatName = itemView.findViewById(R.id.chat_name_text_view);
+            chatName = itemView.findViewById(R.id.user_name_text_view);
             lastMessage = itemView.findViewById(R.id.last_message_text_view);
             lastMessageAt = itemView.findViewById(R.id.last_message_at_text_view);
             container = itemView.findViewById(R.id.chat_item_container_constraint_layout);
@@ -71,11 +71,8 @@ public class MessengerRecyclerViewAdapter extends RecyclerView.Adapter<Messenger
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         holder.avatar.setClipToOutline(true);
         if(chats.get(position).getType().equals(TYPE_DIALOG)) {
-            holder.chatName.setText( chats.get(position).getMessages().get(0).getAuthorEmail() );
+            holder.chatName.setText( chats.get(position).getUsers().get(0).getName() );
         }
-        holder.lastMessage.setText( chats.get(position).getMessages().get(0).getMessage() ); // add sort
-        holder.lastMessageAt.setText( chats.get(position).getMessages().get(0).getTime() ); // add sort
-
         RxView.clicks(holder.container)
             .debounce(150, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
@@ -84,7 +81,10 @@ public class MessengerRecyclerViewAdapter extends RecyclerView.Adapter<Messenger
             }, error -> {
                 Log.d(TAG, "MessengerRecyclerViewAdapter.onBindViewHolder: " + error.getMessage());
             }, () -> {});
+        if( chats.get(position).getMessages().size() == 0) return;
 
+        holder.lastMessage.setText( chats.get(position).getMessages().get(0).getMessage() ); // add sort
+        holder.lastMessageAt.setText( chats.get(position).getMessages().get(0).getTime() ); // add sort
     }
 
     @Override
