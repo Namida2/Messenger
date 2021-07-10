@@ -1,6 +1,7 @@
 package adapters;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.R;
+import com.example.messenger.User;
 import com.example.messenger.interfaces.UserInterface;
 import com.jakewharton.rxbinding4.view.RxView;
 
@@ -20,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 
@@ -28,7 +32,8 @@ import static tools.Const.USER_FIELDS_DELIMITER;
 
 public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<UsersRecyclerViewAdapter.ViewHolder> {
 
-    private ArrayList<UserInterface> usersList;
+    private ArrayList<UserInterface> usersList = new ArrayList<>();
+    private Consumer<UserInterface> acceptUserConsumer;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private ConstraintLayout container;
@@ -43,12 +48,13 @@ public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<UsersRecycler
             container = itemView.findViewById(R.id.user_container_constraint_layout);
         }
     }
-
+    public void setAcceptUserConsumer(Consumer<UserInterface> acceptUserConsumer) {
+        this.acceptUserConsumer = acceptUserConsumer;
+    }
     public void setUsersList(ArrayList<UserInterface> usersList) {
         this.usersList = usersList;
         this.notifyDataSetChanged();
     }
-
     @NonNull
     @NotNull
     @Override
@@ -57,7 +63,7 @@ public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<UsersRecycler
         View view = layoutInflater.inflate(R.layout.layout_user, parent, false);
         return new ViewHolder(view);
     }
-
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
@@ -70,7 +76,7 @@ public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<UsersRecycler
             .debounce(150, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(unit -> {
-
+                acceptUserConsumer.accept(usersList.get(position));
             }, error -> {
                 Log.d(TAG, "UsersRecyclerViewAdapter.onBindViewHolder: " + error.getMessage());
             }, () -> {});

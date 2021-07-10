@@ -20,10 +20,21 @@ public class MainFragmentModel implements MainFragmentInterface.Model {
     private ArrayList<UserInterface> userList;
     private RecyclerView recyclerView;
     private UsersRecyclerViewAdapter adapter;
+    private static UserInterface user;
 
     public MainFragmentModel () {
         db = FirebaseFirestore.getInstance();
         userList = new ArrayList<>();
+    }
+
+    @Override
+    public void setChosenUser(UserInterface user) {
+        this.user = user;
+    }
+
+    @Override
+    public UserInterface getChosenUser() {
+        return user;
     }
 
     @Override

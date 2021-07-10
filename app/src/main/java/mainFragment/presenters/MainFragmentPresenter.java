@@ -19,14 +19,24 @@ import static tools.Const.TAG;
 public class MainFragmentPresenter implements MainFragmentInterface.Presenter {
 
     private MainFragmentInterface.View view;
-    private MainFragmentInterface.Model model;
+    private static MainFragmentInterface.Model model;
 
     public MainFragmentPresenter (MainFragmentInterface.View view) {
         this.view = view;
         if(model == null) {
             model = new MainFragmentModel();
             model.setAdapter(new UsersRecyclerViewAdapter());
+            onResume();
+            setModelState();
         }
+    }
+    @Override
+    public void onResume() {
+        if(model.getAdapter() == null) return;
+        model.getAdapter().setAcceptUserConsumer(user -> {
+            model.setChosenUser(user);
+            view.startUserProfileFragment(user);
+        });
     }
     @Override
     public void setModelState() {
@@ -58,6 +68,7 @@ public class MainFragmentPresenter implements MainFragmentInterface.Presenter {
     }
     @Override
     public void setRecyclerView(RecyclerView recyclerView) {
+        recyclerView.setAdapter(model.getAdapter());
         model.setRecyclerView(recyclerView);
     }
 }

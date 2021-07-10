@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_mainFragment_to_profileFragment2"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/messengerFragment"
@@ -37,4 +40,8 @@
             android:id="@+id/action_profileFragment2_to_mainFragment"
             app:destination="@id/mainFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.example.messenger.UserProfileFragment"
+        android:label="UserProfileFragment" />
 </navigation>

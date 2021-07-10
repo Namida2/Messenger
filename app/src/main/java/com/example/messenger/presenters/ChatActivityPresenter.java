@@ -9,6 +9,7 @@ import com.example.messenger.Chat;
 import com.example.messenger.Message;
 import com.example.messenger.User;
 import com.example.messenger.interfaces.ChatActivityInterface;
+import com.example.messenger.interfaces.UserInterface;
 import com.example.messenger.models.ChatActivityModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -20,14 +21,20 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import adapters.ChatRecyclerViewAdapter;
+import messengerFragment.interfaces.MessengerFragmentInterface;
 import messengerFragment.models.MessengerFragmentModel;
 import tools.ErrorAlertDialog;
 
 import static tools.Const.CollectionChats.COLLECTION_CHATS;
+import static tools.Const.CollectionChats.FIELD_CHAT_NAME;
+import static tools.Const.CollectionChats.FIELD_LAST_MESSAGE_AT;
 import static tools.Const.CollectionChats.FIELD_MESSAGES_IN_CHAT;
+import static tools.Const.CollectionChats.FIELD_TYPE;
+import static tools.Const.CollectionChats.FIELD_USERS;
 import static tools.Const.CollectionMessages.COLLECTION_MESSAGES;
 import static tools.Const.TAG;
 import static tools.Const.TIME_DELIMITER;
@@ -37,14 +44,16 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
     private int position;
     private ChatActivityInterface.View view;
     private static ChatActivityInterface.Model model;
+    private MessengerFragmentInterface.Model messengerModel;
 
     public ChatActivityPresenter (ChatActivityInterface.View view, int position) {
         this.view = view;
         this.position = position;
+        messengerModel = new MessengerFragmentModel();
         if(model == null) {
             model = new ChatActivityModel();
             Chat chat = new MessengerFragmentModel().getChats().get(position);
-            model.setChat(new MessengerFragmentModel().getChats().get(position));
+            model.setChat(messengerModel.getChats().get(position));
             model.setAdapter(new ChatRecyclerViewAdapter(model.getChat()));
         }
         model.setRecyclerView(view.getRecyclerView());
@@ -91,10 +100,29 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
             data.put(FIELD_MESSAGES_IN_CHAT, messagesInChat);
             transaction.set(docRefChat, data, SetOptions.merge());
 
+            if(model.getChat().getMessages().size() == 1) {
+                Chat chat = model.getChat();
+                DocumentReference docRefNewChat = model.getDatabase()
+                    .collection(COLLECTION_CHATS).document(chat.getChatId());
+                data = new HashMap<>();
+                data.put(FIELD_CHAT_NAME, chat.getChatName());
+                data.put(FIELD_LAST_MESSAGE_AT, chat.getMessages().get(chat.getMessages().size()-1).getTime());
+                data.put(FIELD_MESSAGES_IN_CHAT, chat.getMessages().size());
+                data.put(FIELD_TYPE, chat.getType());
+                List<String> listUsers = new ArrayList<>();
+                for(UserInterface chatUser : chat.getUsers()) {
+                    listUsers.add(chatUser.getEmail());
+                }
+                data.put(FIELD_USERS, listUsers);
+                transaction.set(docRefNewChat, data);
+
+                //add chat to chats_ids
+            }
+
             return true;
         }).addOnCompleteListener(task -> {
             if( !task.isSuccessful() ) {
-                Log.d(TAG, "MessengerFragmentPresenter.readMessages: " + task.getException());
+                Log.d(TAG, "MessengerFragmentPresenter.sendMessage: " + task.getException());
                 view.onError(ErrorAlertDialog.SOMETHING_WRONG);
             }
         });

@@ -9,7 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.messenger.MainActivity;
 import com.example.messenger.R;
+import com.example.messenger.interfaces.UserInterface;
+import com.jakewharton.rxbinding4.view.RxView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +30,6 @@ public class MainFragment extends Fragment implements MainFragmentInterface.View
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = new MainFragmentPresenter(this);
-        presenter.setModelState();
         View contentView = presenter.getView();
         if (contentView != null) return;
         contentView = View.inflate(getContext(), R.layout.fragment_main, null);
@@ -41,10 +43,23 @@ public class MainFragment extends Fragment implements MainFragmentInterface.View
     public View onCreateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         return presenter.getView();
     }
+
+    @Override
+    public void startUserProfileFragment(UserInterface user) {
+        if (getActivity() == null) return;
+        ( (MainActivity) getActivity()).showProfileFragment(user);
+    }
+
     @Override
     public void onError(int errorCode) {
         if(!ErrorAlertDialog.isIsExist() && getActivity() != null)
             ErrorAlertDialog.getInstance(errorCode)
                 .show(getActivity().getSupportFragmentManager(), "");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter.onResume();
     }
 }

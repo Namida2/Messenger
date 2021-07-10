@@ -1,10 +1,16 @@
 package com.example.messenger;
 
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -12,8 +18,10 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavDestination;
 import androidx.navigation.NavHostController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.messenger.interfaces.UserInterface;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.concurrent.TimeUnit;
@@ -27,6 +35,7 @@ import static tools.Const.TAG;
 public class MainActivity extends AppCompatActivity {
 
 
+    private static final int RESULT_LOAD_IMAGE = 11;
     private BottomNavigationView bottomNavigationView;
     private NavHostFragment navHostFragment;
     private NavHostController navHostController;
@@ -79,18 +88,26 @@ public class MainActivity extends AppCompatActivity {
             });
     }
 
-    private Observable<Integer> getBottomAppBarObservable () {
-        return Observable.create(emitter -> {
-            bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-                emitter.onNext(item.getItemId());
-                return true;
-            });
-        });
+    public void showProfileFragment(UserInterface user) {
+        navHostController.navigate(R.id.userProfileFragment,
+            null,
+            new NavOptions.Builder().setPopEnterAnim(android.R.anim.slide_in_left)
+                .setEnterAnim(R.anim.slide_left).build()
+        );
     }
+
     private void initialisation () {
         title = findViewById(R.id.title);
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         navHostController = (NavHostController) navHostFragment.getNavController();
+    }
+    private Observable<Integer> getBottomAppBarObservable () {
+        return Observable.create(emitter -> {
+            bottomNavigationView.setOnItemSelectedListener(item -> {
+                emitter.onNext(item.getItemId());
+                return true;
+            });
+        });
     }
 }

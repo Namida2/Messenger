@@ -1,5 +1,7 @@
 package com.example.messenger;
 
+import com.example.messenger.interfaces.UserInterface;
+
 import java.util.ArrayList;
 
 public class Chat {
@@ -9,7 +11,7 @@ public class Chat {
     private Long messagesInChat;
     private String type;
     private String chatId;
-    private ArrayList<User> users;
+    private ArrayList<UserInterface> users;
     private ArrayList<Message> messages;
 
     public Chat() {
@@ -17,7 +19,7 @@ public class Chat {
         this.messages = new ArrayList<>();
     }
 
-    public ArrayList<User> getUsers() {
+    public ArrayList<UserInterface> getUsers() {
         return users;
     }
     public Long getMessagesInChat() {
@@ -51,7 +53,7 @@ public class Chat {
     public void setType(String type) {
         this.type = type;
     }
-    public void setUsers(ArrayList<User> users) {
+    public void setUsers(ArrayList<UserInterface> users) {
         this.users = users;
     }
     public void setMessages(ArrayList<Message> messages) {

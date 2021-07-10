@@ -1,11 +1,7 @@
 package mainFragment.interfaces;
 
-
-import android.view.View;
-
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.messenger.User;
 import com.example.messenger.interfaces.UserInterface;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -15,6 +11,8 @@ import adapters.UsersRecyclerViewAdapter;
 
 public interface MainFragmentInterface {
     interface Model {
+        void setChosenUser(UserInterface user);
+        UserInterface getChosenUser();
         ArrayList<UserInterface> getUsersList();
         FirebaseFirestore getDatabase();
         void setAdapter(UsersRecyclerViewAdapter adapter);
@@ -25,9 +23,11 @@ public interface MainFragmentInterface {
         RecyclerView getRecyclerView();
     }
     interface View {
+        void startUserProfileFragment(UserInterface user);
         void onError(int errorCode);
     }
     interface Presenter {
+        void onResume();
         void setModelState();
         android.view.View getView();
         void setView(android.view.View view);

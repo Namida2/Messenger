@@ -20,6 +20,7 @@ public class Const {
         public static final String FIELD_CHAT_NAME = "chat_name";
         public static final String FIELD_LAST_MESSAGE_AT = "last_message_at";
         public static final String FIELD_MESSAGES_IN_CHAT = "messages_in_chat";
+        public static final String CHAT_ID_DELIMITER = "messages_in_chat";
     }
 
     public static class CollectionMessages {
