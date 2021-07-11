@@ -85,4 +85,9 @@ public class ChatActivity extends AppCompatActivity implements ChatActivityInter
                 .show(getSupportFragmentManager(), "");
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
+    }
 }

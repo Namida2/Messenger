@@ -12,6 +12,8 @@ import com.example.messenger.MainActivity;
 import com.example.messenger.R;
 import registration.interfaces.LogInActivityInterface;
 import registration.presenters.LogInActivityPresenter;
+
+import com.example.messenger.SplashScreenActivity;
 import com.jakewharton.rxbinding4.view.RxView;
 
 import java.util.concurrent.TimeUnit;
@@ -70,7 +72,7 @@ public class LogInActivity extends AppCompatActivity implements LogInActivityInt
     }
     @Override
     public void onSuccess() {
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, SplashScreenActivity.class));
     }
     @Override
     public void onError(int errorCode) {

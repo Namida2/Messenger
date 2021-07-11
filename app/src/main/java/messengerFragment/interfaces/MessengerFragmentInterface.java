@@ -23,15 +23,13 @@ public interface MessengerFragmentInterface {
     }
     interface View {
         void startChatActivity(int position);
-        void onSuccess();
-        void onError(int errorCode);
     }
     interface Presenter {
         void onResume();
         void setRecyclerView(RecyclerView recyclerView);
         MessengerRecyclerViewAdapter getAdapter();
         void setModelState(UserInterface user);
-        android.view.View getView();
+        android.view.View getView(MessengerFragmentInterface.View view);
         void setView(android.view.View view);
     }
 }

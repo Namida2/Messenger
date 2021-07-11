@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.Chat;
 import com.example.messenger.R;
+import com.example.messenger.User;
+import com.example.messenger.interfaces.UserInterface;
 import com.jakewharton.rxbinding4.view.RxView;
 
 import org.jetbrains.annotations.NotNull;
@@ -71,7 +73,9 @@ public class MessengerRecyclerViewAdapter extends RecyclerView.Adapter<Messenger
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         holder.avatar.setClipToOutline(true);
         if(chats.get(position).getType().equals(TYPE_DIALOG)) {
-            holder.chatName.setText( chats.get(position).getUsers().get(0).getName() );
+            for(UserInterface user : chats.get(position).getUsers())
+                if (!user.getEmail().equals(User.getCurrentUser().getEmail()))
+                    holder.chatName.setText(user.getName());
         }
         RxView.clicks(holder.container)
             .debounce(150, TimeUnit.MILLISECONDS)
@@ -82,9 +86,12 @@ public class MessengerRecyclerViewAdapter extends RecyclerView.Adapter<Messenger
                 Log.d(TAG, "MessengerRecyclerViewAdapter.onBindViewHolder: " + error.getMessage());
             }, () -> {});
         if( chats.get(position).getMessages().size() == 0) return;
-
-        holder.lastMessage.setText( chats.get(position).getMessages().get(0).getMessage() ); // add sort
-        holder.lastMessageAt.setText( chats.get(position).getMessages().get(0).getTime() ); // add sort
+        holder.lastMessage.setText( chats.get(position).getMessages().get(
+            chats.get(position).getMessages().size()-1
+        ).getMessage() ); // add sort
+        holder.lastMessageAt.setText( chats.get(position).getMessages().get(
+            chats.get(position).getMessages().size()-1
+        ).getTime() ); // add sort
     }
 
     @Override

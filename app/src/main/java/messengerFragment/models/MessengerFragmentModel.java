@@ -5,6 +5,7 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.Chat;
+import com.example.messenger.interfaces.BaseInterface;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;

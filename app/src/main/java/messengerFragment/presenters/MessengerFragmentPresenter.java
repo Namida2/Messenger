@@ -7,7 +7,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.Chat;
 import com.example.messenger.Message;
+import com.example.messenger.MessagesListenerService;
 import com.example.messenger.User;
+import com.example.messenger.interfaces.BaseInterface;
+import com.example.messenger.interfaces.MessagesObservable;
 import com.example.messenger.interfaces.UserInterface;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -37,25 +40,27 @@ import static tools.Const.CollectionUsers.FIELD_CHATS;
 import static tools.Const.CollectionUsers.FIELD_CHATS_IDS;
 import static tools.Const.TAG;
 
-public class MessengerFragmentPresenter implements MessengerFragmentInterface.Presenter {
+public class MessengerFragmentPresenter implements MessengerFragmentInterface.Presenter, MessagesObservable.Subscriber {
 
-    private MessengerFragmentInterface.View view;
+    private final BaseInterface baseView;
+    private final MessengerFragmentInterface.View view;
     private static MessengerFragmentInterface.Model model;
 
-    public MessengerFragmentPresenter (MessengerFragmentInterface.View view) {
+    public MessengerFragmentPresenter (BaseInterface baseView, MessengerFragmentInterface.View view) {
         this.view = view;
+        this.baseView = baseView;
         if(model == null) {
             model = new MessengerFragmentModel();
             setModelState(User.getCurrentUser());
         }
+        MessagesListenerService.getService().subscribe(this);
     }
 
     @Override
     public void setModelState(UserInterface user) {
-        User.getCurrentUser().setEmail("aa@aa.com"); // delete
         model.getDatabase()
             .collection(COLLECTION_USERS)
-            .document("aa@aa.com")
+            .document(user.getEmail())
             .collection(COLLECTION_MESSENGER)
             .document(FIELD_CHATS)
             .get().addOnCompleteListener(task -> {
@@ -65,12 +70,16 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
                     readChats(chatsIds);
                 } else {
                     Log.d(TAG, "MessengerFragmentPresenter.setModelState: " + task.getException());
-                    view.onError(ErrorAlertDialog.SOMETHING_WRONG);
+                    baseView.onError(ErrorAlertDialog.SOMETHING_WRONG);
                 }
         });
     }
 
     private void readChats(List<String> chatsIds) {
+        if(chatsIds == null || chatsIds.size() == 0) {
+            baseView.onSuccess();
+            return;
+        }
         model.getDatabase().runTransaction(transaction -> {
             for(String chatId : chatsIds) {
                 DocumentReference docRefChat = model.getDatabase()
@@ -91,7 +100,7 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
                         .collection(COLLECTION_USERS)
                         .document(userName);
                     User user = transaction.get(docRefUser).toObject(User.class);
-                    chat.getUsers().add(transaction.get(docRefUser).toObject(User.class));
+                    chat.getUsers().add(user);
                 }
 
                 model.getChats().add(chat);
@@ -102,7 +111,7 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
                 readMessages(chatsIds);
             } else {
                 Log.d(TAG, "MessengerFragmentPresenter.readChats: " + task.getException());
-                view.onError(ErrorAlertDialog.SOMETHING_WRONG);
+                baseView.onError(ErrorAlertDialog.SOMETHING_WRONG);
             }
         });
     }
@@ -127,24 +136,23 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
                         Collections.sort(model.getChats().get(position).getMessages(),
                             (message1, message2) -> (int) (message1.getId() - message2.getId()));
                         messages = model.getChats().get(position).getMessages();
-                        onSuccess();
+
+                        baseView.onSuccess();
+
                     } else {
                         Log.d(TAG, "MessengerFragmentPresenter.readMessages: " + task.getException());
-                        view.onError(ErrorAlertDialog.SOMETHING_WRONG);
+                        baseView.onError(ErrorAlertDialog.SOMETHING_WRONG);
                     }
             });
         }
     }
-    private void onSuccess() {
+
+    @Override
+    public View getView(MessengerFragmentInterface.View view) {
+        if(model.getView() == null) return null;
         model.setAdapter( new MessengerRecyclerViewAdapter(model.getChats()) );
         model.getRecyclerView().setAdapter(model.getAdapter());
-        model.getAdapter().setAcceptChatConsumer(position -> {
-            view.startChatActivity(position);
-        });
-        view.onSuccess();
-    }
-    @Override
-    public View getView() {
+        model.getAdapter().setAcceptChatConsumer(this.view::startChatActivity);
         return model.getView();
     }
     @Override
@@ -158,12 +166,22 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
     @Override
     public void onResume() {
         if(model.getAdapter() == null) return;
-        model.getAdapter().setAcceptChatConsumer(position -> {
-            view.startChatActivity(position);
-        });
+        model.getAdapter().setAcceptChatConsumer(view::startChatActivity);
+        model.getAdapter().notifyDataSetChanged();
     }
     @Override
     public void setRecyclerView(RecyclerView recyclerView) {
         model.setRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void notifyMe(Chat chat) {
+        String name = Thread.currentThread().getName();
+        try {
+            model.getAdapter()
+                .notifyItemChanged(model.getChats().indexOf(chat));
+        } catch (Exception e) {
+            Log.d(TAG, "MessengerFragmentPresenter.notifyMe: " + e.getMessage());
+        }
     }
 }

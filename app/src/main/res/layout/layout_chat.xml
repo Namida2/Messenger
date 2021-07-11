@@ -32,7 +32,7 @@
         android:singleLine="true"
         android:text="James Horner"
         android:textColor="@color/black"
-        android:textSize="20dp"
+        android:textSize="16dp"
         app:layout_constraintEnd_toStartOf="@+id/last_message_at_text_view"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/avatar_image_view"
