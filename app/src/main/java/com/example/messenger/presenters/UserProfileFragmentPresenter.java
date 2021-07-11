@@ -19,7 +19,7 @@ public class UserProfileFragmentPresenter implements UserProfileFragmentInterfac
 
     private UserProfileFragmentInterface.View view;
     private static MainFragmentInterface.Model model;
-    private static MessengerFragmentInterface.Model messengerModel;
+    private MessengerFragmentInterface.Model messengerModel;
 
     public UserProfileFragmentPresenter (UserProfileFragmentInterface.View view) {
         this.view = view;

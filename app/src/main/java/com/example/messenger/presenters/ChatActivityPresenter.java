@@ -36,6 +36,10 @@ import static tools.Const.CollectionChats.FIELD_MESSAGES_IN_CHAT;
 import static tools.Const.CollectionChats.FIELD_TYPE;
 import static tools.Const.CollectionChats.FIELD_USERS;
 import static tools.Const.CollectionMessages.COLLECTION_MESSAGES;
+import static tools.Const.CollectionUsers.COLLECTION_MESSENGER;
+import static tools.Const.CollectionUsers.COLLECTION_USERS;
+import static tools.Const.CollectionUsers.FIELD_CHATS;
+import static tools.Const.CollectionUsers.FIELD_CHATS_IDS;
 import static tools.Const.TAG;
 import static tools.Const.TIME_DELIMITER;
 
@@ -52,10 +56,11 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
         messengerModel = new MessengerFragmentModel();
         if(model == null) {
             model = new ChatActivityModel();
-            Chat chat = new MessengerFragmentModel().getChats().get(position);
-            model.setChat(messengerModel.getChats().get(position));
-            model.setAdapter(new ChatRecyclerViewAdapter(model.getChat()));
         }
+        Chat chat = new MessengerFragmentModel().getChats().get(position);
+        ArrayList<Chat> chats = messengerModel.getChats();
+        model.setChat(messengerModel.getChats().get(position));
+        model.setAdapter(new ChatRecyclerViewAdapter(model.getChat()));
         model.setRecyclerView(view.getRecyclerView());
         model.getRecyclerView().setAdapter(model.getAdapter());
         model.getAdapter().notifyDataSetChanged();
@@ -64,6 +69,7 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
 
     @Override
     public void sendMessage(String message) {
+        User.getCurrentUser().setEmail("aa@aa.com"); // delete
         int newPosition;
         User user = User.getCurrentUser();
         Message newMessage = new Message();
@@ -75,7 +81,6 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
         String hours = Integer.toString(currentTime.getHours());
         String minutes = Integer.toString(currentTime.getMinutes());
         newMessage.setTime(hours + TIME_DELIMITER + minutes);
-
         model.getChat().getMessages().add(newMessage);
 
         newPosition = model.getChat().getMessages().size()-1;
@@ -86,15 +91,18 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
             .collection(COLLECTION_CHATS)
             .document(model.getChat().getChatId())
             .collection(COLLECTION_MESSAGES);
-
         DocumentReference docRefChat = model.getDatabase()
             .collection(COLLECTION_CHATS)
             .document(model.getChat().getChatId());
+        CollectionReference collRefUsers = model.getDatabase()
+            .collection(COLLECTION_USERS);
 
         model.getDatabase().runTransaction(transaction -> {
-            Long messagesInChat = ((Long) transaction.get(docRefChat).getData().get(FIELD_MESSAGES_IN_CHAT)) + 1;
-            newMessage.setId(messagesInChat);
+            Long messagesInChat = 0L;
+            if (model.getChat().getMessages().size() != 1)
+                messagesInChat = ((Long) transaction.get(docRefChat).getData().get(FIELD_MESSAGES_IN_CHAT)) + 1;
 
+            newMessage.setId(messagesInChat);
             transaction.set(collRefMessages.document(messagesInChat.toString()), newMessage);
             Map<String, Object> data = new HashMap<>();
             data.put(FIELD_MESSAGES_IN_CHAT, messagesInChat);
@@ -116,7 +124,15 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
                 data.put(FIELD_USERS, listUsers);
                 transaction.set(docRefNewChat, data);
 
-                //add chat to chats_ids
+                for(UserInterface userInterface : chat.getUsers()) {
+                    DocumentReference docRefChats = collRefUsers
+                        .document(userInterface.getEmail())
+                        .collection(COLLECTION_MESSENGER)
+                        .document(FIELD_CHATS);
+                    List<String> chatId = new ArrayList<>();
+                    chatId.add(chat.getChatId());
+                    transaction.update(docRefChats, FIELD_CHATS_IDS, chatId);
+                }
             }
 
             return true;

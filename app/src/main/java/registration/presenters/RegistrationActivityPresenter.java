@@ -3,15 +3,21 @@ package registration.presenters;
 import android.util.Log;
 
 import com.example.messenger.User;
+import com.google.firebase.firestore.DocumentReference;
+
 import registration.interfaces.RegistrationActivityInterface;
 import registration.models.RegistrationActivityModel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tools.ErrorAlertDialog;
 
+import static tools.Const.CollectionUsers.COLLECTION_MESSENGER;
 import static tools.Const.CollectionUsers.COLLECTION_USERS;
+import static tools.Const.CollectionUsers.FIELD_CHATS;
 import static tools.Const.TAG;
 
 public class RegistrationActivityPresenter implements RegistrationActivityInterface.Presenter {
@@ -48,9 +54,16 @@ public class RegistrationActivityPresenter implements RegistrationActivityInterf
         model.getFirebaseAuth().createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
             .addOnCompleteListener(taskRegistration -> {
                 if(taskRegistration.isSuccessful()) {
-                    model.getDatabase().collection(COLLECTION_USERS)
-                        .document(user.getEmail())
-                        .set(user).addOnCompleteListener(task -> {
+
+                    model.getDatabase().runTransaction(transaction -> {
+                        DocumentReference docRegUser = model.getDatabase()
+                            .collection(COLLECTION_USERS)
+                            .document(user.getEmail());
+                        transaction.set(docRegUser, user);
+                        List<String> data = new ArrayList<>();
+                        transaction.set(docRegUser.collection(COLLECTION_MESSENGER).document(FIELD_CHATS), data);
+                        return true;
+                    }).addOnCompleteListener(task -> {
                         if(task.isSuccessful())
                             view.onSuccess();
                         else {

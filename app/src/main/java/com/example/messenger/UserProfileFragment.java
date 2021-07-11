@@ -51,7 +51,7 @@ public class UserProfileFragment extends Fragment implements UserProfileFragment
         ( (TextView) contentView.findViewById(R.id.user_city_text_view)).setText(user.getCity());
         ( (TextView) contentView.findViewById(R.id.user_age_text_view)).setText(user.getAge());
         ( (TextView) contentView.findViewById(R.id.user_sex_text_view)).setText(user.getSex());
-        ( (ImageView) contentView.findViewById(R.id.user_avatar_image_view)).setClipToOutline(true);
+        contentView.findViewById(R.id.user_avatar_image_view).setClipToOutline(true);
 
         RxView.clicks(contentView.findViewById(R.id.go_to_dialog_button))
             .debounce(150, TimeUnit.MILLISECONDS)
@@ -69,6 +69,6 @@ public class UserProfileFragment extends Fragment implements UserProfileFragment
         if(getActivity() == null) return;
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         intent.putExtra(EXTRA_TAG_POSITION, position);
-        startActivity(new Intent(getActivity(), ChatActivity.class));
+        startActivity(intent);
     }
 }
