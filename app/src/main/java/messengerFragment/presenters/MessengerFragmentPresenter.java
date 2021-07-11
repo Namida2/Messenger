@@ -136,20 +136,15 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
         }
     }
     private void onSuccess() {
-//        model.setAdapter( new MessengerRecyclerViewAdapter(model.getChats()) );
-//        model.getRecyclerView().setAdapter(model.getAdapter());
-//        model.getAdapter().setAcceptChatConsumer(position -> {
-//            view.startChatActivity(position);
-//        });
-        view.onSuccess();
-    }
-    @Override
-    public View getView() {
         model.setAdapter( new MessengerRecyclerViewAdapter(model.getChats()) );
         model.getRecyclerView().setAdapter(model.getAdapter());
         model.getAdapter().setAcceptChatConsumer(position -> {
             view.startChatActivity(position);
         });
+        view.onSuccess();
+    }
+    @Override
+    public View getView() {
         return model.getView();
     }
     @Override
