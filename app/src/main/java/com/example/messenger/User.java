@@ -13,6 +13,7 @@ public class User implements UserInterface {
     private String status;
     private String city;
     private String age;
+    private List<String> chatIds;
 
     private static User currentUser = new User();
 
@@ -57,6 +58,10 @@ public class User implements UserInterface {
         return avatarString;
     }
 
+    public List<String> getMyChatIds() {
+        return chatIds;
+    }
+
     @Override
     public void setAge(String age) {
         this.age = age;
@@ -83,5 +88,9 @@ public class User implements UserInterface {
     }
     public void setAvatarString(String avatarString) {
         this.avatarString = avatarString;
+    }
+
+    public void setMyChatIds(List<String> chatIds) {
+        this.chatIds = chatIds;
     }
 }

@@ -2,9 +2,6 @@ package com.example.messenger.presenters;
 
 import android.util.Log;
 
-import androidx.recyclerview.widget.LinearSmoothScroller;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.messenger.Chat;
 import com.example.messenger.Message;
 import com.example.messenger.MessagesListenerService;
@@ -16,12 +13,10 @@ import com.example.messenger.models.ChatActivityModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +36,7 @@ import static tools.Const.CollectionChats.FIELD_USERS;
 import static tools.Const.CollectionMessages.COLLECTION_MESSAGES;
 import static tools.Const.CollectionUsers.COLLECTION_MESSENGER;
 import static tools.Const.CollectionUsers.COLLECTION_USERS;
-import static tools.Const.CollectionUsers.FIELD_CHATS;
+import static tools.Const.CollectionUsers.DOCUMENT_CHATS;
 import static tools.Const.CollectionUsers.FIELD_CHATS_IDS;
 import static tools.Const.TAG;
 import static tools.Const.TIME_DELIMITER;
@@ -133,7 +128,7 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter, M
                     DocumentReference docRefChats = collRefUsers
                         .document(userInterface.getEmail())
                         .collection(COLLECTION_MESSENGER)
-                        .document(FIELD_CHATS);
+                        .document(DOCUMENT_CHATS);
                     transaction.update(docRefChats, FIELD_CHATS_IDS, FieldValue.arrayUnion(chat.getChatId()));
                 }
             }

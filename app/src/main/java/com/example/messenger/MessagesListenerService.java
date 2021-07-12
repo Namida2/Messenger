@@ -16,25 +16,33 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.util.Consumer;
 
 import com.example.messenger.interfaces.MessagesObservable;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import messengerFragment.models.MessengerFragmentModel;
-import tools.ErrorAlertDialog;
 
 import static tools.Const.CollectionChats.COLLECTION_CHATS;
+import static tools.Const.CollectionChats.FIELD_CHAT_NAME;
 import static tools.Const.CollectionChats.FIELD_LAST_MESSAGE_AT;
 import static tools.Const.CollectionChats.FIELD_MESSAGES_IN_CHAT;
+import static tools.Const.CollectionChats.FIELD_TYPE;
+import static tools.Const.CollectionChats.FIELD_USERS;
 import static tools.Const.CollectionMessages.COLLECTION_MESSAGES;
+import static tools.Const.CollectionUsers.COLLECTION_MESSENGER;
+import static tools.Const.CollectionUsers.COLLECTION_USERS;
+import static tools.Const.CollectionUsers.DOCUMENT_CHATS;
+import static tools.Const.CollectionUsers.FIELD_CHATS_IDS;
 import static tools.Const.TAG;
 
 public class MessagesListenerService extends Service implements MessagesObservable.Observable {
@@ -45,61 +53,150 @@ public class MessagesListenerService extends Service implements MessagesObservab
     private static final ArrayList<MessagesObservable.Subscriber> subscribers = new ArrayList<>();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static MessagesListenerService service;
-    private static final AtomicBoolean firstCall = new AtomicBoolean(true);
+    private static final AtomicBoolean isExits = new AtomicBoolean(false);
     private static Consumer<Boolean> onCrateConsumer;
     private int id = 0;
 
+    private ArrayList<Chat> chats = new MessengerFragmentModel().getChats();
 
-    private final ArrayList<Chat> chats = new MessengerFragmentModel().getChats();
-
+    public class Pair {
+        public Chat chat;
+        public Long messagesInChat;
+        public Pair (Chat chat, Long messagesInChat) {
+            this.chat = chat;
+            this.messagesInChat = messagesInChat;
+        }
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onCreate() {
         service = this;
+        isExits.set(true);
         notificationManager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
         createChannel(notificationManager);
-        startDocumentListening()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(messagesInChat -> {
-
-            })
         onCrateConsumer.accept(true);
     }
 
-    public static void setOnCrateConsumer(Consumer<Boolean> onCreateConsumer) {
-        MessagesListenerService.onCrateConsumer = onCreateConsumer;
+    public void startMessagesListening(ArrayList<Chat> chats) {
+        this.chats = chats;
+        getMessagesObservable(chats)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(pair -> {
+                readMessages(pair.chat, pair.messagesInChat);
+            }, error -> {
+                Log.d(TAG, "MessagesListenerService.onCreate: " + error.getMessage());
+            }, () -> {});
+        onCrateConsumer.accept(true);
     }
-
-
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY;
     }
+
     @Override
-    public Observable<Long> startDocumentListening() {
+    public Observable<Pair> getMessagesObservable(ArrayList<Chat> chats) {
         return Observable.create(emitter -> {
             for (Chat chat : chats) {
                 db.collection(COLLECTION_CHATS)
                     .document(chat.getChatId())
                     .addSnapshotListener((snapshot, error) -> {
                         if (error != null) {
-                            Log.d(TAG, "startDocumentListening: " + error.getMessage());
+                            Log.d(TAG, "MessagesListenerService.startMessagesListening: " + error.getMessage());
                             return;
                         }
                         if (snapshot != null && snapshot.exists()) {
                             Long messagesInChat = (Long) snapshot.getData().get(FIELD_MESSAGES_IN_CHAT);
                             if (chat.getMessages().size() - messagesInChat < 0) {
-                                emitter.onNext(messagesInChat);
+                                emitter.onNext(new Pair(chat, messagesInChat));
                             }
-                        } else {
-                            Log.d(TAG, "Current data: null");
                         }
                     });
             }
         });
     }
+
+    @Override
+    public void startChatsListening(User user) {
+        db.collection(COLLECTION_USERS)
+            .document(user.getEmail())
+            .collection(COLLECTION_MESSENGER)
+            .document(DOCUMENT_CHATS)
+            .addSnapshotListener((snapshot, error) -> {
+                if (error != null) {
+                    Log.d(TAG, "MessagesListenerService.tartChatsListening: " + error.getMessage());
+                    return;
+                }
+                if (snapshot != null && snapshot.exists()) {
+                    List<String> chatIds = (List<String>) snapshot.getData().get(FIELD_CHATS_IDS);
+                    if(user.getMyChatIds() == null) {
+                        user.setMyChatIds(new ArrayList<>(chatIds));
+                        return;
+                    }
+                    Set<String> newChatIds = new HashSet<>(chatIds);
+                    newChatIds.removeAll(user.getMyChatIds());
+                    if(newChatIds.iterator().hasNext())
+                        readChat(newChatIds.iterator().next());
+                }
+            });
+    }
+
+    private void readChat(String chatId) {
+        db.runTransaction(transaction -> {
+            DocumentReference docRefChat = db.collection(COLLECTION_CHATS).document(chatId);
+
+            DocumentSnapshot docSnapshotChat = transaction.get(docRefChat);
+            Chat chat = new Chat();
+            chat.setChatId(docSnapshotChat.getId());
+            chat.setType( (String) docSnapshotChat.getData().get(FIELD_TYPE));
+            chat.setChatName( (String) docSnapshotChat.getData().get(FIELD_CHAT_NAME));
+            chat.setMessagesInChat( (Long) docSnapshotChat.getData().get(FIELD_MESSAGES_IN_CHAT));
+            chat.setLastMessageAt( (String) docSnapshotChat.getData().get(FIELD_LAST_MESSAGE_AT));
+
+            List<String> usersInChat = (List<String>) docSnapshotChat.getData().get(FIELD_USERS);
+            for(String userName : usersInChat) {
+                DocumentReference docRefUser = db.collection(COLLECTION_USERS).document(userName);
+                User user = transaction.get(docRefUser).toObject(User.class);
+                chat.getUsers().add(user);
+            }
+            if(!chats.contains(chat))
+                chats.add(chat);
+            readMessages(chat);
+            return chat;
+        }).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+
+            } else {
+                Log.d(TAG, "MessagesListenerService.readChat: " + task.getException());
+            }
+        });
+    }
+
+    private void readMessages(Chat chat) {
+        db.collection(COLLECTION_CHATS)
+            .document(chat.getChatId()).collection(COLLECTION_MESSAGES)
+            .get().addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    for(QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                        Message message = queryDocumentSnapshot.toObject(Message.class);
+                        message.setId( Long.parseLong(queryDocumentSnapshot.getId()) );
+                        chat.getMessages().add(message);
+                    }
+                    ArrayList<Message> messages = chat.getMessages();
+                    Collections.sort(chat.getMessages(),
+                        (message1, message2) -> (int) (message1.getId() - message2.getId()));
+                    Message message = chat.getMessages().get(chat.getMessages().size()-1);
+                    notifySubscribers(chat);
+                    startMessagesListening(chats);
+                    if(!message.getAuthorEmail().equals(User.getCurrentUser().getEmail()))
+                        showNotification( message.getAuthorName(), message.getMessage() );
+                } else {
+                    Log.d(TAG, "MessagesListenerService.readChat: " + task.getException());
+                }
+            });
+    }
+
     private void readMessages(Chat chat, Long messagesInChat) {
         db.runTransaction(transaction -> {
             for(int i = chat.getMessages().size() + 1; i <= messagesInChat; ++i) {
@@ -109,15 +206,26 @@ public class MessagesListenerService extends Service implements MessagesObservab
                     .document(Integer.toString(i));
                 Message message = transaction.get(docRefMessage).toObject(Message.class);
                 chat.getMessages().add( message );
-                notifySubscribers(chat);
-                showNotification(message.getAuthorName(), message.getMessage());
-
+                if(!message.getAuthorEmail().equals(User.getCurrentUser().getEmail()))
+                    showNotification(message.getAuthorName(), message.getMessage());
             }
             return true;
         }).addOnCompleteListener(task -> {
-
+            if(task.isSuccessful()) notifySubscribers(chat);
+            else Log.d(TAG, "MessagesListenerService.readMessages: " + task.getException());
         });
 
+    }
+    @Override
+    public void subscribe(MessagesObservable.Subscriber subscriber) {
+        for(int i = 0; i < subscribers.size(); ++i) {
+            MessagesObservable.Subscriber mySubscriber = subscribers.get(i);
+            if (mySubscriber.getClass() == subscriber.getClass()) {
+                subscribers.remove(i);
+                break;
+            }
+        }
+        subscribers.add(subscriber);
     }
     public void showNotification(String title, String name) {
         //Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification);
@@ -155,18 +263,6 @@ public class MessagesListenerService extends Service implements MessagesObservab
     }
 
     @Override
-    public void subscribe(MessagesObservable.Subscriber subscriber) {
-        for(int i = 0; i < subscribers.size(); ++i) {
-            MessagesObservable.Subscriber mySubscriber = subscribers.get(i);
-            if (mySubscriber.getClass() == subscriber.getClass()) {
-                subscribers.remove(i);
-                break;
-            }
-        }
-        subscribers.add(subscriber);
-    }
-
-    @Override
     public void unSubscribe(MessagesObservable.Subscriber subscriber) {
         subscribers.remove(subscriber);
     }
@@ -180,5 +276,13 @@ public class MessagesListenerService extends Service implements MessagesObservab
 
     public static MessagesListenerService getService() {
         return service;
+    }
+
+    public static void setOnCrateConsumer(Consumer<Boolean> onCreateConsumer) {
+        MessagesListenerService.onCrateConsumer = onCreateConsumer;
+    }
+
+    public static Boolean isExits() {
+        return isExits.get();
     }
 }

@@ -9,7 +9,7 @@ public class Const {
     public static class CollectionUsers {
         public static final String COLLECTION_USERS = "users";
         public static final String COLLECTION_MESSENGER = "messenger";
-        public static final String FIELD_CHATS = "chats";
+        public static final String DOCUMENT_CHATS = "chats";
         public static final String FIELD_CHATS_IDS = "chats_ids";
     }
     public static class CollectionChats {

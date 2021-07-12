@@ -10,6 +10,7 @@ import com.example.messenger.interfaces.BaseInterface;
 import com.example.messenger.interfaces.SplashScreenActivityInterface;
 import com.example.messenger.presenters.SplashScreenActivityPresenter;
 
+import messengerFragment.models.MessengerFragmentModel;
 import registration.LogInActivity;
 import tools.ErrorAlertDialog;
 
@@ -21,10 +22,12 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashScr
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        MessagesListenerService.setOnCrateConsumer(accept -> {
-            presenter = new SplashScreenActivityPresenter(this,this);
-        });
-        startService(new Intent(this, MessagesListenerService.class));
+        if( !MessagesListenerService.isExits() ) {
+            MessagesListenerService.setOnCrateConsumer(accept -> {
+                presenter = new SplashScreenActivityPresenter(this,this);
+            });
+            startService(new Intent(this, MessagesListenerService.class));
+        } else presenter = new SplashScreenActivityPresenter(this,this);
     }
 
     @Override
@@ -36,6 +39,8 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashScr
 
     @Override
     public void onSuccess() {
+        MessagesListenerService.getService().startMessagesListening(new MessengerFragmentModel().getChats());
+        MessagesListenerService.getService().startChatsListening(User.getCurrentUser());
         startActivity(new Intent(this, MainActivity.class));
     }
 

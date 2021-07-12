@@ -18,7 +18,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +35,7 @@ import static tools.Const.CollectionChats.FIELD_USERS;
 import static tools.Const.CollectionMessages.COLLECTION_MESSAGES;
 import static tools.Const.CollectionUsers.COLLECTION_MESSENGER;
 import static tools.Const.CollectionUsers.COLLECTION_USERS;
-import static tools.Const.CollectionUsers.FIELD_CHATS;
+import static tools.Const.CollectionUsers.DOCUMENT_CHATS;
 import static tools.Const.CollectionUsers.FIELD_CHATS_IDS;
 import static tools.Const.TAG;
 
@@ -62,7 +61,7 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
             .collection(COLLECTION_USERS)
             .document(user.getEmail())
             .collection(COLLECTION_MESSENGER)
-            .document(FIELD_CHATS)
+            .document(DOCUMENT_CHATS)
             .get().addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
                     Map<String, Object> data = task.getResult().getData();
@@ -102,7 +101,7 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
                     User user = transaction.get(docRefUser).toObject(User.class);
                     chat.getUsers().add(user);
                 }
-
+                User.getCurrentUser().setMyChatIds(chatsIds);
                 model.getChats().add(chat);
             }
             return true;

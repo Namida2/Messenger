@@ -17,7 +17,7 @@ import tools.ErrorAlertDialog;
 
 import static tools.Const.CollectionUsers.COLLECTION_MESSENGER;
 import static tools.Const.CollectionUsers.COLLECTION_USERS;
-import static tools.Const.CollectionUsers.FIELD_CHATS;
+import static tools.Const.CollectionUsers.DOCUMENT_CHATS;
 import static tools.Const.TAG;
 
 public class RegistrationActivityPresenter implements RegistrationActivityInterface.Presenter {
@@ -61,7 +61,7 @@ public class RegistrationActivityPresenter implements RegistrationActivityInterf
                             .document(user.getEmail());
                         transaction.set(docRegUser, user);
                         List<String> data = new ArrayList<>();
-                        transaction.set(docRegUser.collection(COLLECTION_MESSENGER).document(FIELD_CHATS), data);
+                        transaction.set(docRegUser.collection(COLLECTION_MESSENGER).document(DOCUMENT_CHATS), data);
                         return true;
                     }).addOnCompleteListener(task -> {
                         if(task.isSuccessful())
