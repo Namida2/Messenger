@@ -2,6 +2,8 @@ package com.example.messenger;
 
 import com.example.messenger.interfaces.UserInterface;
 
+import java.util.List;
+
 public class User implements UserInterface {
     private String name;
     private String avatarString;
@@ -11,7 +13,8 @@ public class User implements UserInterface {
     private String status;
     private String city;
     private String age;
-    private static final User currentUser = new User();
+
+    private static User currentUser = new User();
 
     public String getPassword() {
         return password;
@@ -21,6 +24,9 @@ public class User implements UserInterface {
     }
     public static User getCurrentUser() {
         return currentUser;
+    }
+    public static void setCurrentUser(User currentUser) {
+        User.currentUser = currentUser;
     }
 
     @Override

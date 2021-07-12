@@ -14,6 +14,8 @@ import com.example.messenger.MainActivity;
 import com.example.messenger.R;
 import registration.interfaces.RegistrationActivityInterface;
 import registration.presenters.RegistrationActivityPresenter;
+
+import com.example.messenger.SplashScreenActivity;
 import com.jakewharton.rxbinding4.view.RxView;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 
@@ -92,7 +94,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
 
     @Override
     public void onSuccess() {
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, SplashScreenActivity.class));
     }
     @Override
     public void onError(int errorCode) {

@@ -1,5 +1,7 @@
 package com.example.messenger;
 
+import androidx.annotation.Nullable;
+
 import com.example.messenger.interfaces.UserInterface;
 
 import java.util.ArrayList;
@@ -61,5 +63,17 @@ public class Chat {
     }
     public void setChatId(String chatId) {
         this.chatId = chatId;
+    }
+
+    @Override
+    public int hashCode() {
+        return chatId.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable @org.jetbrains.annotations.Nullable Object obj) {
+        if(obj == null || obj.getClass() != Chat.class) return false;
+        Chat chat = (Chat) obj;
+        return chat.getChatId().equals(this.chatId);
     }
 }

@@ -26,6 +26,7 @@ public interface ChatActivityInterface {
     interface Presenter {
         void sendMessage(String message);
         int getLastAdapterPosition();
+        void onDestroy();
     }
 
 }

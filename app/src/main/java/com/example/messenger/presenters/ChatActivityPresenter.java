@@ -7,12 +7,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.Chat;
 import com.example.messenger.Message;
+import com.example.messenger.MessagesListenerService;
 import com.example.messenger.User;
 import com.example.messenger.interfaces.ChatActivityInterface;
+import com.example.messenger.interfaces.MessagesObservable;
 import com.example.messenger.interfaces.UserInterface;
 import com.example.messenger.models.ChatActivityModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 
@@ -43,7 +46,7 @@ import static tools.Const.CollectionUsers.FIELD_CHATS_IDS;
 import static tools.Const.TAG;
 import static tools.Const.TIME_DELIMITER;
 
-public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
+public class ChatActivityPresenter implements ChatActivityInterface.Presenter, MessagesObservable.Subscriber {
 
     private int position;
     private ChatActivityInterface.View view;
@@ -65,11 +68,11 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
         model.getRecyclerView().setAdapter(model.getAdapter());
         model.getAdapter().notifyDataSetChanged();
         model.getRecyclerView().scrollToPosition(model.getChat().getMessages().size()-1);
+        MessagesListenerService.getService().subscribe(this);
     }
 
     @Override
     public void sendMessage(String message) {
-        User.getCurrentUser().setEmail("aa@aa.com"); // delete
         int newPosition;
         User user = User.getCurrentUser();
         Message newMessage = new Message();
@@ -103,7 +106,9 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
                 messagesInChat = ((Long) transaction.get(docRefChat).getData().get(FIELD_MESSAGES_IN_CHAT)) + 1;
 
             newMessage.setId(messagesInChat);
-            transaction.set(collRefMessages.document(messagesInChat.toString()), newMessage);
+            transaction.set(collRefMessages.document(
+                Integer.toString(model.getChat().getMessages().size())),
+                newMessage);
             Map<String, Object> data = new HashMap<>();
             data.put(FIELD_MESSAGES_IN_CHAT, messagesInChat);
             transaction.set(docRefChat, data, SetOptions.merge());
@@ -129,9 +134,7 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
                         .document(userInterface.getEmail())
                         .collection(COLLECTION_MESSENGER)
                         .document(FIELD_CHATS);
-                    List<String> chatId = new ArrayList<>();
-                    chatId.add(chat.getChatId());
-                    transaction.update(docRefChats, FIELD_CHATS_IDS, chatId);
+                    transaction.update(docRefChats, FIELD_CHATS_IDS, FieldValue.arrayUnion(chat.getChatId()));
                 }
             }
 
@@ -150,4 +153,21 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter {
         return model.getChat().getMessages().size() == 0 ? 0
             : model.getChat().getMessages().size()-1;
     }
+
+    @Override
+    public void onDestroy() {
+        if(messengerModel.getChats().get(position).getMessages().size() == 0)
+            messengerModel.getChats().remove(position);
+    }
+
+    @Override
+    public void notifyMe(Chat chat) {
+        String name = Thread.currentThread().getName();
+        if(model.getChat().equals(chat)) {
+           model.getAdapter().notifyDataSetChanged();
+           view.scrollToPosition(model.getRecyclerView(), chat.getMessages().size() - 1);
+        }
+
+    }
+
 }

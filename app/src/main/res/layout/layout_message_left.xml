@@ -19,7 +19,7 @@
         android:text="Remarkably did in til Bed sacof wit be."
         android:textAlignment="textStart"
         android:textColor="@color/white"
-        android:textSize="16dp" />
+        android:textSize="14dp" />
 
     <TextView
         android:id="@+id/message_time_text_view"

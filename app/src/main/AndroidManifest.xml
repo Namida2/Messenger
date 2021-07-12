@@ -27,6 +27,14 @@
         <activity android:name=".MainActivity"/>
         <activity android:name=".ChatActivity"/>
         <activity android:name="registration.LogInActivity"/>
+        <service
+            android:name=".MessagesListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="your.app.domain.NotificationService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
