@@ -37,8 +37,8 @@ public class SplashScreenActivityPresenter implements SplashScreenActivityInterf
         this.baseView = baseView;
         if(model == null) {
             model = new SplashScreenActivityModel();
-            readCurrentUser();
         }
+        readCurrentUser();
     }
 
     public void readCurrentUser() {

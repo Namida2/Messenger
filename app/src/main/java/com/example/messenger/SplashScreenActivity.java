@@ -22,6 +22,7 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashScr
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+
         if( !MessagesListenerService.isExits() ) {
             MessagesListenerService.setOnCrateConsumer(accept -> {
                 presenter = new SplashScreenActivityPresenter(this,this);

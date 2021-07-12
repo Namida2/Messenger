@@ -176,11 +176,9 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
     @Override
     public void notifyMe(Chat chat) {
         String name = Thread.currentThread().getName();
-        try {
-            model.getAdapter()
-                .notifyItemChanged(model.getChats().indexOf(chat));
-        } catch (Exception e) {
-            Log.d(TAG, "MessengerFragmentPresenter.notifyMe: " + e.getMessage());
-        }
+        if (model.getAdapter() == null) return;
+        model.getAdapter()
+            .notifyItemChanged(model.getChats().indexOf(chat));
+
     }
 }

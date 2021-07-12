@@ -1,6 +1,7 @@
 package com.example.messenger.interfaces;
 
-import java.util.List;
+import android.graphics.Bitmap;
+
 
 public interface UserInterface {
     String getAge();
@@ -9,6 +10,7 @@ public interface UserInterface {
     String getEmail();
     String getSex();
     String getStatus();
+    Bitmap getAvatar();
 
     void setAge(String age);
     void setCity(String city);

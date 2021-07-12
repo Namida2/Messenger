@@ -1,5 +1,7 @@
 package com.example.messenger;
 
+import android.graphics.Bitmap;
+
 import com.example.messenger.interfaces.UserInterface;
 
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.List;
 public class User implements UserInterface {
     private String name;
     private String avatarString;
+    private Bitmap avatar;
     private String email;
     private String password;
     private String sex;
@@ -54,6 +57,12 @@ public class User implements UserInterface {
     public String getStatus() {
         return status;
     }
+
+    @Override
+    public Bitmap getAvatar() {
+        return avatar;
+    }
+
     public String getAvatarString() {
         return avatarString;
     }
@@ -89,8 +98,10 @@ public class User implements UserInterface {
     public void setAvatarString(String avatarString) {
         this.avatarString = avatarString;
     }
-
     public void setMyChatIds(List<String> chatIds) {
         this.chatIds = chatIds;
+    }
+    public void setAvatar(Bitmap avatar) {
+        this.avatar = avatar;
     }
 }

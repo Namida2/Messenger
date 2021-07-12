@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         initialisation();
-
         disposable = getBottomAppBarObservable()
             .debounce(150, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
@@ -110,4 +109,5 @@ public class MainActivity extends AppCompatActivity {
             });
         });
     }
+
 }

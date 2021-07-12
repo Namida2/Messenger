@@ -26,7 +26,7 @@
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_profile"
         android:drawableTint="@color/white"
-        android:fontFamily="@font/montserrat_light"
+        android:fontFamily="@font/montserrat_regular"
         android:textColor="@color/white"
         android:textColorHint="@android:color/darker_gray" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

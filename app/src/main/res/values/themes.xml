@@ -22,6 +22,14 @@
         <item name="colorOnPrimary">@color/white</item>
     </style>
 
+    <style name="simpleEditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.EditText</item>
+    </style>
+    <style name="ThemeOverlay.App.EditText" parent="">
+        <item name="colorOnPrimary">@color/black</item>
+    </style>
+
+
     <style name="editTextStyle" parent="Widget.AppCompat.EditText">
         <item name="android:minHeight">46dp</item>
         <item name="android:background">@drawable/bg_edit_text</item>
@@ -29,6 +37,7 @@
         <item name="android:layout_marginStart">16sp</item>
         <item name="android:layout_marginEnd">16sp</item>
         <item name="android:drawablePadding">8sp</item>
+        <item name="android:paddingEnd">8sp</item>
         <item name="android:fontFamily">@font/montserrat_semi_bold</item>
         <item name="android:textSize">18sp</item>
     </style>
@@ -38,7 +47,7 @@
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.Button</item>
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">@font/montserrat_light</item>
+        <item name="android:fontFamily">@font/montserrat_regular</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:minHeight">58dp</item>
@@ -60,7 +69,7 @@
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">@font/montserrat_light</item>
+        <item name="android:fontFamily">@font/montserrat_regular</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:minHeight">58dp</item>

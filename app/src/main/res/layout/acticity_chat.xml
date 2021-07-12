@@ -97,7 +97,7 @@
             android:minHeight="56dp"
             android:paddingStart="16dp"
             android:padding="8dp"
-            android:fontFamily="@font/montserrat_light"
+            android:fontFamily="@font/montserrat_regular"
             android:textColor="@color/white"
             android:textColorHint="@android:color/darker_gray"
             app:layout_anchor="@+id/constraintLayout2"

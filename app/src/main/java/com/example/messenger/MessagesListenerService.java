@@ -47,15 +47,15 @@ import static tools.Const.TAG;
 
 public class MessagesListenerService extends Service implements MessagesObservable.Observable {
 
-    private static final String channelId = "MessengerId";
-    private static final String channelName = "MessengerChannel";
-    private NotificationManager notificationManager;
-    private static final ArrayList<MessagesObservable.Subscriber> subscribers = new ArrayList<>();
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private static MessagesListenerService service;
-    private static final AtomicBoolean isExits = new AtomicBoolean(false);
-    private static Consumer<Boolean> onCrateConsumer;
     private int id = 0;
+    private static final String channelId = "MessengerId";
+    private static MessagesListenerService service;
+    private NotificationManager notificationManager;
+    private static Consumer<Boolean> onCrateConsumer;
+    private static final String channelName = "MessengerChannel";
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static final AtomicBoolean isExits = new AtomicBoolean(false);
+    private static final ArrayList<MessagesObservable.Subscriber> subscribers = new ArrayList<>();
 
     private ArrayList<Chat> chats = new MessengerFragmentModel().getChats();
 

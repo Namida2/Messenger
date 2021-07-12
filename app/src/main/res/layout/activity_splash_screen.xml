@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
 
             android:layout_marginStart="8dp"
-            android:fontFamily="@font/montserrat_light"
+            android:fontFamily="@font/montserrat_regular"
             android:text="Messenger"
             android:textColor="@color/white"
             android:textSize="32sp"

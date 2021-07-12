@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <ImageView
         android:layout_margin="8dp"
         android:id="@+id/user_avatar_image_view"
         android:background="@drawable/bg_user_avatar"
         android:layout_centerHorizontal="true"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:src="@drawable/image"/>
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/image1"/>
 
     <TextView
         android:id="@+id/user_name_text_view"
@@ -32,10 +32,11 @@
         android:layout_centerHorizontal="true"
         android:text="Equidem concludaturque ad has, eos facilis delicatissimi cu, no odio."
         android:textSize="16sp"
+        android:layout_marginStart="16dp"
         android:textColor="@color/black"
         android:gravity="center"
         android:layout_below="@id/user_name_text_view"
-        android:fontFamily="@font/montserrat_light"/>
+        android:fontFamily="@font/montserrat_regular"/>
 
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -67,7 +68,7 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:gravity="center"
-            android:fontFamily="@font/montserrat_light"/>
+            android:fontFamily="@font/montserrat_regular"/>
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -104,7 +105,7 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:gravity="center"
-            android:fontFamily="@font/montserrat_light"/>
+            android:fontFamily="@font/montserrat_regular"/>
 
         <TextView
             android:layout_marginStart="16dp"
@@ -128,7 +129,7 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:gravity="center"
-            android:fontFamily="@font/montserrat_light"/>
+            android:fontFamily="@font/montserrat_regular"/>
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <Button
@@ -140,7 +141,7 @@
         android:layout_marginTop="32dp"
         android:gravity="center"
         android:paddingStart="24dp"
-        android:textSize="16dp"
+        android:textSize="14dp"
         android:text="Перейти к диалогу" />
 
 </RelativeLayout>
