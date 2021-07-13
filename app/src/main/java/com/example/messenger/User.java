@@ -98,7 +98,7 @@ public class User implements UserInterface {
     public void setAvatarString(String avatarString) {
         this.avatarString = avatarString;
     }
-    public void setMyChatIds(List<String> chatIds) {
+    public void setChatIds(List<String> chatIds) {
         this.chatIds = chatIds;
     }
     public void setAvatar(Bitmap avatar) {

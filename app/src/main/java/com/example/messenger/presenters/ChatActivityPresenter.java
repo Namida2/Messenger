@@ -1,5 +1,6 @@
 package com.example.messenger.presenters;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.example.messenger.Chat;
@@ -102,7 +103,7 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter, M
 
             newMessage.setId(messagesInChat);
             transaction.set(collRefMessages.document(
-                Integer.toString(model.getChat().getMessages().size())),
+                Long.toString(messagesInChat)),
                 newMessage);
             Map<String, Object> data = new HashMap<>();
             data.put(FIELD_MESSAGES_IN_CHAT, messagesInChat);
@@ -114,7 +115,7 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter, M
                     .collection(COLLECTION_CHATS).document(chat.getChatId());
                 data = new HashMap<>();
                 data.put(FIELD_CHAT_NAME, chat.getChatName());
-                data.put(FIELD_LAST_MESSAGE_AT, chat.getMessages().get(chat.getMessages().size()-1).getTime());
+                data.put(FIELD_LAST_MESSAGE_AT, messagesInChat);
                 data.put(FIELD_MESSAGES_IN_CHAT, chat.getMessages().size());
                 data.put(FIELD_TYPE, chat.getType());
                 List<String> listUsers = new ArrayList<>();
@@ -135,7 +136,9 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter, M
 
             return true;
         }).addOnCompleteListener(task -> {
-            if( !task.isSuccessful() ) {
+            if( task.isSuccessful() ) {
+                model.getChat().setMessagesInChat((long) model.getChat().getMessages().size());
+            } else {
                 Log.d(TAG, "MessengerFragmentPresenter.sendMessage: " + task.getException());
                 view.onError(ErrorAlertDialog.SOMETHING_WRONG);
             }
@@ -153,6 +156,13 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter, M
     public void onDestroy() {
         if(messengerModel.getChats().get(position).getMessages().size() == 0)
             messengerModel.getChats().remove(position);
+    }
+
+    @Override
+    public Bitmap getDialogBitmap() {
+        return model.getChat().getUsers().get(
+            model.getChat().getUsers().size()-1
+        ).getAvatar();
     }
 
     @Override

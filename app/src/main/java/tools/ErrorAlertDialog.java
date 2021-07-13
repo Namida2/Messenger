@@ -32,6 +32,7 @@ public class ErrorAlertDialog extends DialogFragment {
     public static final int WRONG_EMAIL_OR_PASSWORD = 5;
     public static final int EMPTY_FIELD = 6;
     public static final int SOMETHING_WRONG = 7;
+    public static final int TOO_BIG_IMAGE = 8;
 
     private Consumer<Object> acceptAction;
     private static final AtomicBoolean isExist = new AtomicBoolean(false);
@@ -98,7 +99,10 @@ public class ErrorAlertDialog extends DialogFragment {
                 title.setText(R.string.error_alert_dialog_something_wrong_title);
                 text.setText(R.string.error_alert_dialog_something_wrong_text);
                 break;
-
+            case TOO_BIG_IMAGE:
+                title.setText(R.string.error_alert_dialog_too_big_image_title);
+                text.setText(R.string.error_alert_dialog_too_big_image_text);
+                break;
         }
         builder.setView(view);
         return builder.create();

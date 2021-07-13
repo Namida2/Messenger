@@ -5,12 +5,22 @@ public class Const {
     public static final String EXTRA_TAG_POSITION = "position";
     public static final String TIME_DELIMITER = ":";
     public static final String USER_FIELDS_DELIMITER = ", ";
+    public static final String SUCCESS = "Success";
+    public static final String ERROR = "error";
 
     public static class CollectionUsers {
         public static final String COLLECTION_USERS = "users";
         public static final String COLLECTION_MESSENGER = "messenger";
         public static final String DOCUMENT_CHATS = "chats";
         public static final String FIELD_CHATS_IDS = "chats_ids";
+        public static final String FIELD_AGE = "age";
+        public static final String FIELD_AVATAR_STRING = "avatarString";
+        public static final String FIELD_CITY = "city";
+        public static final String FIELD_EMAIL = "email";
+        public static final String FIELD_NAME = "name";
+        public static final String FIELD_PASSWORD = "password";
+        public static final String FIELD_SEX = "sex";
+        public static final String FIELD_STATUS = "status";
     }
     public static class CollectionChats {
         public static final String TYPE_DIALOG = "dialog";

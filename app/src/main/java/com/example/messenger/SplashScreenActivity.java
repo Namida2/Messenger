@@ -2,6 +2,7 @@ package com.example.messenger;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,8 @@ import messengerFragment.models.MessengerFragmentModel;
 import registration.LogInActivity;
 import tools.ErrorAlertDialog;
 
+import static tools.Const.TAG;
+
 public class SplashScreenActivity extends AppCompatActivity implements SplashScreenActivityInterface.View, BaseInterface {
 
     private SplashScreenActivityInterface.Presenter presenter;
@@ -22,12 +25,16 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashScr
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-
+        Log.d(TAG, "SplashScreenActivity: " );
         if( !MessagesListenerService.isExits() ) {
             MessagesListenerService.setOnCrateConsumer(accept -> {
                 presenter = new SplashScreenActivityPresenter(this,this);
             });
-            startService(new Intent(this, MessagesListenerService.class));
+            try {
+                startService(new Intent(this, MessagesListenerService.class));
+            } catch (Exception e) {
+                Log.d(TAG, "SplashScreenActivity: " + e.getMessage());
+            }
         } else presenter = new SplashScreenActivityPresenter(this,this);
     }
 

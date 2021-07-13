@@ -1,5 +1,8 @@
 package messengerFragment.presenters;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 
@@ -26,6 +29,7 @@ import messengerFragment.interfaces.MessengerFragmentInterface;
 import messengerFragment.models.MessengerFragmentModel;
 import tools.ErrorAlertDialog;
 
+import static tools.Base64.fromBase64;
 import static tools.Const.CollectionChats.COLLECTION_CHATS;
 import static tools.Const.CollectionChats.FIELD_CHAT_NAME;
 import static tools.Const.CollectionChats.FIELD_LAST_MESSAGE_AT;
@@ -45,13 +49,17 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
     private final MessengerFragmentInterface.View view;
     private static MessengerFragmentInterface.Model model;
 
-    public MessengerFragmentPresenter (BaseInterface baseView, MessengerFragmentInterface.View view) {
+    public MessengerFragmentPresenter (BaseInterface baseView, MessengerFragmentInterface.View view, boolean newUser) {
         this.view = view;
         this.baseView = baseView;
-        if(model == null) {
+        if(model == null || newUser) {
             model = new MessengerFragmentModel();
+            model.setChats(new ArrayList<>());
             setModelState(User.getCurrentUser());
+        } else {
+            Log.d(TAG, "MessengerFragmentPresenter: +++++++++" );
         }
+
         MessagesListenerService.getService().subscribe(this);
     }
 
@@ -99,9 +107,11 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
                         .collection(COLLECTION_USERS)
                         .document(userName);
                     User user = transaction.get(docRefUser).toObject(User.class);
+                    user.setAvatar( fromBase64(user.getAvatarString()) );
+
                     chat.getUsers().add(user);
                 }
-                User.getCurrentUser().setMyChatIds(chatsIds);
+                User.getCurrentUser().setChatIds(chatsIds);
                 model.getChats().add(chat);
             }
             return true;
@@ -120,6 +130,7 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
         for(int i = 0; i < chatsIds.size(); ++i) {
             chatId = chatsIds.get(i);
             int position = i;
+            int finalI = i;
             model.getDatabase()
                 .collection(COLLECTION_CHATS)
                 .document(chatId)
@@ -136,7 +147,7 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
                             (message1, message2) -> (int) (message1.getId() - message2.getId()));
                         messages = model.getChats().get(position).getMessages();
 
-                        baseView.onSuccess();
+                        if(finalI == chatsIds.size()-1) baseView.onSuccess();
 
                     } else {
                         Log.d(TAG, "MessengerFragmentPresenter.readMessages: " + task.getException());

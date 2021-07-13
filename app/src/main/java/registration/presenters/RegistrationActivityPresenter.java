@@ -9,15 +9,27 @@ import registration.interfaces.RegistrationActivityInterface;
 import registration.models.RegistrationActivityModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tools.ErrorAlertDialog;
 
+import static tools.Base64.toBase64;
 import static tools.Const.CollectionUsers.COLLECTION_MESSENGER;
 import static tools.Const.CollectionUsers.COLLECTION_USERS;
 import static tools.Const.CollectionUsers.DOCUMENT_CHATS;
+import static tools.Const.CollectionUsers.FIELD_AGE;
+import static tools.Const.CollectionUsers.FIELD_AVATAR_STRING;
+import static tools.Const.CollectionUsers.FIELD_CHATS_IDS;
+import static tools.Const.CollectionUsers.FIELD_CITY;
+import static tools.Const.CollectionUsers.FIELD_EMAIL;
+import static tools.Const.CollectionUsers.FIELD_NAME;
+import static tools.Const.CollectionUsers.FIELD_PASSWORD;
+import static tools.Const.CollectionUsers.FIELD_SEX;
+import static tools.Const.CollectionUsers.FIELD_STATUS;
 import static tools.Const.TAG;
 
 public class RegistrationActivityPresenter implements RegistrationActivityInterface.Presenter {
@@ -39,6 +51,7 @@ public class RegistrationActivityPresenter implements RegistrationActivityInterf
                         user.setName(name);
                         user.setEmail(email.toLowerCase());
                         user.setPassword(password);
+                        user.setAvatarString(toBase64(view.getBaseAvatar()));
                         writeNewUser(user);
                     } else {
                         view.onError(ErrorAlertDialog.EMAIL_ALREADY_EXIST);
@@ -54,14 +67,24 @@ public class RegistrationActivityPresenter implements RegistrationActivityInterf
         model.getFirebaseAuth().createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
             .addOnCompleteListener(taskRegistration -> {
                 if(taskRegistration.isSuccessful()) {
-
                     model.getDatabase().runTransaction(transaction -> {
-                        DocumentReference docRegUser = model.getDatabase()
+                        DocumentReference docRefUser = model.getDatabase()
                             .collection(COLLECTION_USERS)
                             .document(user.getEmail());
-                        transaction.set(docRegUser, user);
-                        List<String> data = new ArrayList<>();
-                        transaction.set(docRegUser.collection(COLLECTION_MESSENGER).document(DOCUMENT_CHATS), data);
+                        Map<String, Object> data = new HashMap<>();
+                        data.put(FIELD_AGE, user.getAge());
+                        data.put(FIELD_AVATAR_STRING, user.getAvatarString());
+                        data.put(FIELD_CITY, user.getCity());
+                        data.put(FIELD_EMAIL, user.getEmail());
+                        data.put(FIELD_NAME, user.getName());
+                        data.put(FIELD_PASSWORD, user.getPassword());
+                        data.put(FIELD_SEX, user.getSex());
+                        data.put(FIELD_STATUS, user.getStatus());
+                        transaction.set(docRefUser, data);
+                        List<String> arrayList = new ArrayList<>();
+                        data = new HashMap<>();
+                        data.put(FIELD_CHATS_IDS, arrayList);
+                        transaction.set(docRefUser.collection(COLLECTION_MESSENGER).document(DOCUMENT_CHATS), data);
                         return true;
                     }).addOnCompleteListener(task -> {
                         if(task.isSuccessful())

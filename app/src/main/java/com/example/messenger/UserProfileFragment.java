@@ -51,6 +51,7 @@ public class UserProfileFragment extends Fragment implements UserProfileFragment
         ( (TextView) contentView.findViewById(R.id.user_city_text_view)).setText(user.getCity());
         ( (TextView) contentView.findViewById(R.id.user_age_text_view)).setText(user.getAge());
         ( (TextView) contentView.findViewById(R.id.user_sex_text_view)).setText(user.getSex());
+        ((ImageView)contentView.findViewById(R.id.user_avatar_image_view)).setImageBitmap(user.getAvatar());
         contentView.findViewById(R.id.user_avatar_image_view).setClipToOutline(true);
         ((ImageView)contentView.findViewById(R.id.user_avatar_image_view)).setScaleType(ImageView.ScaleType.CENTER_CROP);
 

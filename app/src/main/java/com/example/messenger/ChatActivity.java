@@ -2,12 +2,14 @@ package com.example.messenger;
 
 import android.app.Activity;
 import android.icu.text.IDNA;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,8 +44,10 @@ public class ChatActivity extends AppCompatActivity implements ChatActivityInter
     }
     private void initialisation() {
         int position = getIntent().getIntExtra(EXTRA_TAG_POSITION, 0);
-        findViewById(R.id.avatar_image_view).setClipToOutline(true);
         presenter = new ChatActivityPresenter(this, position);
+        ImageView imageView = findViewById(R.id.avatar_image_view);
+        imageView.setClipToOutline(true);
+        imageView.setImageBitmap(presenter.getDialogBitmap());
         messageEditText = findViewById(R.id.message_edit_text);
         sendButton = findViewById(R.id.send_button);
         RxView.clicks(sendButton)

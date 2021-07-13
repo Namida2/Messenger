@@ -1,5 +1,7 @@
 package com.example.messenger.interfaces;
 
+import android.graphics.Bitmap;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.Chat;
@@ -27,6 +29,7 @@ public interface ChatActivityInterface {
         void sendMessage(String message);
         int getLastAdapterPosition();
         void onDestroy();
+        Bitmap getDialogBitmap();
     }
 
 }

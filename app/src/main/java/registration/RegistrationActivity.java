@@ -1,6 +1,9 @@
 package registration;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
@@ -10,7 +13,6 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.messenger.MainActivity;
 import com.example.messenger.R;
 import registration.interfaces.RegistrationActivityInterface;
 import registration.presenters.RegistrationActivityPresenter;
@@ -59,16 +61,19 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
             .debounce(150, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(next -> {
-                if(isNetworkConnected(this))
+                if(isNetworkConnected(this)) {
                     presenter.registrate(
                         name.getText().toString(), email.getText().toString(),
                         password.getText().toString(), confirmPassword.getText().toString());
+                }
                 else onError(ErrorAlertDialog.INTERNET_CONNECTION);
             }, error -> {
                 Log.d(TAG, "LogInActivity.onCreate: " + error.getMessage());
                 onError(ErrorAlertDialog.SOMETHING_WRONG);
             }, () -> {});
     }
+
+
 
     private void createFieldsObservable() {
         RxTextView.afterTextChangeEvents(name).debounce(150, TimeUnit.MILLISECONDS)
@@ -101,5 +106,11 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         if(!ErrorAlertDialog.isIsExist())
             ErrorAlertDialog.getInstance(errorCode)
                 .show(getSupportFragmentManager(), "");
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    @Override
+    public Bitmap getBaseAvatar() {
+         return ((BitmapDrawable)getResources().getDrawable(R.drawable.image_base_avatar)).getBitmap();
     }
 }

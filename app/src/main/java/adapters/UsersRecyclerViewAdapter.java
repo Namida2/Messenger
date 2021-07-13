@@ -67,7 +67,9 @@ public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<UsersRecycler
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
+        holder.avatar.setImageBitmap(usersList.get(position).getAvatar());
         holder.avatar.setClipToOutline(true);
+        holder.avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
         holder.name.setText(usersList.get(position).getName());
         holder.fields.setText( usersList.get(position).getCity()
             + USER_FIELDS_DELIMITER + usersList.get(position).getSex()

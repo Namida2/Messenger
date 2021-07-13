@@ -1,6 +1,8 @@
 package com.example.messenger.presenters;
 
-
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 
 import com.example.messenger.Message;
@@ -19,12 +21,13 @@ import org.w3c.dom.Document;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import mainFragment.presenters.MainFragmentPresenter;
 import messengerFragment.presenters.MessengerFragmentPresenter;
 import tools.ErrorAlertDialog;
 
+import static tools.Base64.fromBase64;
 import static tools.Const.CollectionUsers.COLLECTION_USERS;
 import static tools.Const.TAG;
-
 
 public class SplashScreenActivityPresenter implements SplashScreenActivityInterface.Presenter {
 
@@ -52,16 +55,19 @@ public class SplashScreenActivityPresenter implements SplashScreenActivityInterf
                 .collection(COLLECTION_USERS)
                 .document(currentUser.getEmail());
             User.setCurrentUser(transaction.get(docRefUser).toObject(User.class));
+            User.getCurrentUser().setAvatar(
+                fromBase64(User.getCurrentUser().getAvatarString())
+            );
             return true;
         }).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
-                new MessengerFragmentPresenter(baseView, null);
+                new MessengerFragmentPresenter(baseView, null, true);
+                new MainFragmentPresenter(baseView, null, true);
             } else {
                 Log.d(TAG, "MessengerFragmentPresenter.readMessages: " + task.getException());
                 baseView.onError(ErrorAlertDialog.SOMETHING_WRONG);
             }
         });
     }
-
 
 }

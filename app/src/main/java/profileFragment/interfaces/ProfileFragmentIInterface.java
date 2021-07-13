@@ -9,6 +9,7 @@ public interface ProfileFragmentIInterface {
     }
     interface View {
         void onError(int errorCode);
+        void onSuccess();
     }
     interface Presenter {
         void acceptChanges();

@@ -74,8 +74,12 @@ public class MessengerRecyclerViewAdapter extends RecyclerView.Adapter<Messenger
         holder.avatar.setClipToOutline(true);
         if(chats.get(position).getType().equals(TYPE_DIALOG)) {
             for(UserInterface user : chats.get(position).getUsers())
-                if (!user.getEmail().equals(User.getCurrentUser().getEmail()))
+                if (!user.getEmail().equals(User.getCurrentUser().getEmail())) {
                     holder.chatName.setText(user.getName());
+                    holder.avatar.setImageBitmap(user.getAvatar());
+                    holder.avatar.setClipToOutline(true);
+                    holder.avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                }
         }
         RxView.clicks(holder.container)
             .debounce(150, TimeUnit.MILLISECONDS)

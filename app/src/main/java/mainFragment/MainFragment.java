@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.messenger.MainActivity;
 import com.example.messenger.R;
+import com.example.messenger.interfaces.BaseInterface;
 import com.example.messenger.interfaces.UserInterface;
 import com.jakewharton.rxbinding4.view.RxView;
 
@@ -22,14 +23,14 @@ import messengerFragment.interfaces.MessengerFragmentInterface;
 import messengerFragment.presenters.MessengerFragmentPresenter;
 import tools.ErrorAlertDialog;
 
-public class MainFragment extends Fragment implements MainFragmentInterface.View {
+public class MainFragment extends Fragment implements MainFragmentInterface.View, BaseInterface {
 
     private MainFragmentInterface.Presenter presenter;
 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenter = new MainFragmentPresenter(this);
+        presenter = new MainFragmentPresenter(this, this, false);
         View contentView = presenter.getView();
         if (contentView != null) return;
         contentView = View.inflate(getContext(), R.layout.fragment_main, null);
@@ -55,6 +56,11 @@ public class MainFragment extends Fragment implements MainFragmentInterface.View
         if(!ErrorAlertDialog.isIsExist() && getActivity() != null)
             ErrorAlertDialog.getInstance(errorCode)
                 .show(getActivity().getSupportFragmentManager(), "");
+    }
+
+    @Override
+    public void onSuccess() {
+
     }
 
     @Override

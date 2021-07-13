@@ -6,6 +6,7 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.User;
+import com.example.messenger.interfaces.BaseInterface;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import adapters.UsersRecyclerViewAdapter;
@@ -13,17 +14,19 @@ import mainFragment.interfaces.MainFragmentInterface;
 import mainFragment.models.MainFragmentModel;
 import tools.ErrorAlertDialog;
 
+import static tools.Base64.fromBase64;
 import static tools.Const.CollectionUsers.COLLECTION_USERS;
 import static tools.Const.TAG;
 
 public class MainFragmentPresenter implements MainFragmentInterface.Presenter {
 
     private MainFragmentInterface.View view;
+    private BaseInterface baseView;
     private static MainFragmentInterface.Model model;
 
-    public MainFragmentPresenter (MainFragmentInterface.View view) {
+    public MainFragmentPresenter (BaseInterface baseView, MainFragmentInterface.View view, boolean newUser) {
         this.view = view;
-        if(model == null) {
+        if(model == null || newUser) {
             model = new MainFragmentModel();
             model.setAdapter(new UsersRecyclerViewAdapter());
             onResume();
@@ -46,14 +49,15 @@ public class MainFragmentPresenter implements MainFragmentInterface.Presenter {
                 if(task.isSuccessful()) {
                     for(QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
                         User user = queryDocumentSnapshot.toObject(User.class);
-                        model.getUsersList().add( queryDocumentSnapshot.toObject(User.class) );
+                        user.setAvatar(fromBase64(user.getAvatarString()));
+                        model.getUsersList().add(user);
                     }
                     model.getAdapter().setUsersList(model.getUsersList());
                     if (model.getRecyclerView() == null) return;
                     model.getRecyclerView().setAdapter(model.getAdapter());
                 } else {
                     Log.d(TAG, "MessengerFragmentPresenter.readMessages: " + task.getException());
-                    view.onError(ErrorAlertDialog.SOMETHING_WRONG);
+                    baseView.onError(ErrorAlertDialog.SOMETHING_WRONG);
                 }
         });
     }

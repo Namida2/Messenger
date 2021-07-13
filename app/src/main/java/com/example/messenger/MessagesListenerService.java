@@ -19,6 +19,7 @@ import com.example.messenger.interfaces.MessagesObservable;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -27,11 +28,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import messengerFragment.models.MessengerFragmentModel;
 
+import static tools.Base64.fromBase64;
 import static tools.Const.CollectionChats.COLLECTION_CHATS;
 import static tools.Const.CollectionChats.FIELD_CHAT_NAME;
 import static tools.Const.CollectionChats.FIELD_LAST_MESSAGE_AT;
@@ -54,10 +58,12 @@ public class MessagesListenerService extends Service implements MessagesObservab
     private static Consumer<Boolean> onCrateConsumer;
     private static final String channelName = "MessengerChannel";
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private static final AtomicBoolean isExits = new AtomicBoolean(false);
+    private static final AtomicBoolean isExist = new AtomicBoolean(false);
     private static final ArrayList<MessagesObservable.Subscriber> subscribers = new ArrayList<>();
 
     private ArrayList<Chat> chats = new MessengerFragmentModel().getChats();
+    private ListenerRegistration registration;
+    private Disposable disposable;
 
     public class Pair {
         public Chat chat;
@@ -67,27 +73,46 @@ public class MessagesListenerService extends Service implements MessagesObservab
             this.messagesInChat = messagesInChat;
         }
     }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void myStartForeground() {
+        Intent intent = new Intent(this, SplashScreenActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        Notification notification = new NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_email)
+            .setColor(getResources().getColor(R.color.fui_transparent))
+            .setContentTitle("Служба уведоблений DOMO")
+            .setDefaults(NotificationCompat.DEFAULT_SOUND)
+            .setAutoCancel(false)
+            .setContentIntent(pendingIntent)
+            .build();
+        startForeground(777, notification);
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onCreate() {
+        //myStartForeground();
         service = this;
-        isExits.set(true);
+        isExist.set(true);
         notificationManager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
         createChannel(notificationManager);
-        onCrateConsumer.accept(true);
+        try {
+            onCrateConsumer.accept(true);
+        } catch (Exception e) {
+            Log.d(TAG, "MessagesListenerService: " + e.getMessage());
+        }
     }
 
     public void startMessagesListening(ArrayList<Chat> chats) {
         this.chats = chats;
-        getMessagesObservable(chats)
+        disposable = getMessagesObservable(chats)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(pair -> {
                 readMessages(pair.chat, pair.messagesInChat);
             }, error -> {
                 Log.d(TAG, "MessagesListenerService.onCreate: " + error.getMessage());
             }, () -> {});
-        onCrateConsumer.accept(true);
     }
 
     @Override
@@ -103,12 +128,15 @@ public class MessagesListenerService extends Service implements MessagesObservab
                     .document(chat.getChatId())
                     .addSnapshotListener((snapshot, error) -> {
                         if (error != null) {
+                            isExist.set(false);
+                            unSubscribeFromDatabase();
+                            stopSelf();
                             Log.d(TAG, "MessagesListenerService.startMessagesListening: " + error.getMessage());
                             return;
                         }
                         if (snapshot != null && snapshot.exists()) {
                             Long messagesInChat = (Long) snapshot.getData().get(FIELD_MESSAGES_IN_CHAT);
-                            if (chat.getMessages().size() - messagesInChat < 0) {
+                            if (chat.getMessagesInChat() - messagesInChat < 0) {
                                 emitter.onNext(new Pair(chat, messagesInChat));
                             }
                         }
@@ -116,22 +144,33 @@ public class MessagesListenerService extends Service implements MessagesObservab
             }
         });
     }
+    private void unSubscribeFromDatabase() {
+        try {
+            registration.remove();
+            disposable.dispose();
+        } catch (Exception e) {
+            Log.d(TAG, "unSubscribeFromDatabase: " + e.getMessage() );
+        }
+    }
 
     @Override
     public void startChatsListening(User user) {
-        db.collection(COLLECTION_USERS)
+        registration = db.collection(COLLECTION_USERS)
             .document(user.getEmail())
             .collection(COLLECTION_MESSENGER)
             .document(DOCUMENT_CHATS)
             .addSnapshotListener((snapshot, error) -> {
                 if (error != null) {
+                    isExist.set(false);
+                    unSubscribeFromDatabase();
+                    stopSelf();
                     Log.d(TAG, "MessagesListenerService.tartChatsListening: " + error.getMessage());
                     return;
                 }
                 if (snapshot != null && snapshot.exists()) {
                     List<String> chatIds = (List<String>) snapshot.getData().get(FIELD_CHATS_IDS);
                     if(user.getMyChatIds() == null) {
-                        user.setMyChatIds(new ArrayList<>(chatIds));
+                        user.setChatIds(new ArrayList<>(chatIds));
                         return;
                     }
                     Set<String> newChatIds = new HashSet<>(chatIds);
@@ -153,11 +192,13 @@ public class MessagesListenerService extends Service implements MessagesObservab
             chat.setChatName( (String) docSnapshotChat.getData().get(FIELD_CHAT_NAME));
             chat.setMessagesInChat( (Long) docSnapshotChat.getData().get(FIELD_MESSAGES_IN_CHAT));
             chat.setLastMessageAt( (String) docSnapshotChat.getData().get(FIELD_LAST_MESSAGE_AT));
+            chat.setLastMessageAt( (String) docSnapshotChat.getData().get(FIELD_LAST_MESSAGE_AT));
 
             List<String> usersInChat = (List<String>) docSnapshotChat.getData().get(FIELD_USERS);
             for(String userName : usersInChat) {
                 DocumentReference docRefUser = db.collection(COLLECTION_USERS).document(userName);
                 User user = transaction.get(docRefUser).toObject(User.class);
+                user.setAvatar( fromBase64(user.getAvatarString()) );
                 chat.getUsers().add(user);
             }
             if(!chats.contains(chat))
@@ -198,19 +239,22 @@ public class MessagesListenerService extends Service implements MessagesObservab
     }
 
     private void readMessages(Chat chat, Long messagesInChat) {
+        AtomicInteger addSize = new AtomicInteger();
         db.runTransaction(transaction -> {
-            for(int i = chat.getMessages().size() + 1; i <= messagesInChat; ++i) {
+            for(Long i = chat.getMessagesInChat() + 1; i <= messagesInChat; ++i) {
                 DocumentReference docRefMessage = db.collection(COLLECTION_CHATS)
                     .document(chat.getChatId())
                     .collection(COLLECTION_MESSAGES)
-                    .document(Integer.toString(i));
+                    .document(Long.toString(i));
                 Message message = transaction.get(docRefMessage).toObject(Message.class);
                 chat.getMessages().add( message );
+                addSize.incrementAndGet();
                 if(!message.getAuthorEmail().equals(User.getCurrentUser().getEmail()))
                     showNotification(message.getAuthorName(), message.getMessage());
             }
             return true;
         }).addOnCompleteListener(task -> {
+            chat.setMessagesInChat(chat.getMessagesInChat() + addSize.get());
             if(task.isSuccessful()) notifySubscribers(chat);
             else Log.d(TAG, "MessagesListenerService.readMessages: " + task.getException());
         });
@@ -283,6 +327,6 @@ public class MessagesListenerService extends Service implements MessagesObservab
     }
 
     public static Boolean isExits() {
-        return isExits.get();
+        return isExist.get();
     }
 }

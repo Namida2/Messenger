@@ -3,11 +3,14 @@ package com.example.messenger;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -24,6 +27,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.messenger.interfaces.UserInterface;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.ByteArrayOutputStream;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -86,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, Thread.currentThread().getName());
             });
     }
+
 
     public void showProfileFragment(UserInterface user) {
         navHostController.navigate(R.id.userProfileFragment,

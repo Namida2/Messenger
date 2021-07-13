@@ -15,7 +15,7 @@ import messengerFragment.interfaces.MessengerFragmentInterface;
 
 public class MessengerFragmentModel implements MessengerFragmentInterface.Model {
 
-    private static final ArrayList<Chat> chats = new ArrayList<>();
+    private static ArrayList<Chat> chats = new ArrayList<>();
     private RecyclerView recyclerView;
     private MessengerRecyclerViewAdapter adapter;
     private final FirebaseFirestore db;
@@ -23,6 +23,7 @@ public class MessengerFragmentModel implements MessengerFragmentInterface.Model 
 
     public MessengerFragmentModel () {
         this.db = FirebaseFirestore.getInstance();
+
     }
 
     @Override
@@ -33,10 +34,12 @@ public class MessengerFragmentModel implements MessengerFragmentInterface.Model 
     public ArrayList<Chat> getChats() {
         return chats;
     }
+
     @Override
     public View getView() {
         return view;
     }
+
     @Override
     public FirebaseFirestore getDatabase() {
         return db;
@@ -45,11 +48,11 @@ public class MessengerFragmentModel implements MessengerFragmentInterface.Model 
     public MessengerRecyclerViewAdapter getAdapter() {
         return adapter;
     }
-
     @Override
     public void setAdapter(MessengerRecyclerViewAdapter adapter) {
         this.adapter = adapter;
     }
+
     @Override
     public void setView(View view) {
         this.view = view;
@@ -57,5 +60,9 @@ public class MessengerFragmentModel implements MessengerFragmentInterface.Model 
     @Override
     public void setRecyclerView(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
+    }
+    @Override
+    public void setChats(ArrayList<Chat> chats) {
+        MessengerFragmentModel.chats = chats;
     }
 }

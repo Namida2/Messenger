@@ -2,6 +2,7 @@ package messengerFragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import messengerFragment.presenters.MessengerFragmentPresenter;
 import tools.ErrorAlertDialog;
 
 import static tools.Const.EXTRA_TAG_POSITION;
+import static tools.Const.TAG;
 
 public class MessengerFragment extends Fragment implements MessengerFragmentInterface.View, BaseInterface {
 
@@ -30,7 +32,7 @@ public class MessengerFragment extends Fragment implements MessengerFragmentInte
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenter = new MessengerFragmentPresenter(this,this);
+        presenter = new MessengerFragmentPresenter(this,this, false);
         View contentView = presenter.getView(this);
         if(contentView != null) return;
         contentView = View.inflate(getContext(), R.layout.fragment_messenger, null);
@@ -51,7 +53,11 @@ public class MessengerFragment extends Fragment implements MessengerFragmentInte
     }
     @Override
     public void onSuccess() {
-        presenter.getAdapter().notifyDataSetChanged();
+        try {
+            presenter.getAdapter().notifyDataSetChanged();
+        } catch (Exception e) {
+            Log.d(TAG, "MessengerFragment.onSuccess: " + e.getMessage());
+        }
     }
     @Override
     public void onError(int errorCode) {

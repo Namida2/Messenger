@@ -24,6 +24,9 @@
     <string name="error_alert_dialog_something_wrong_title">Oops!</string>
     <string name="error_alert_dialog_something_wrong_text">Что-то пошло не так. Попробуйте выполнить последнее действие позже.</string>
 
+    <string name="error_alert_dialog_too_big_image_title">Изображение слишком большое</string>
+    <string name="error_alert_dialog_too_big_image_text">Попробуйте загрузить другое изображение.</string>
+
     <string name="main">Главная</string>
     <string name="messenger">Мессенджер</string>
     <string name="profile">Профиль</string>

@@ -15,6 +15,7 @@ public interface MessengerFragmentInterface {
         RecyclerView getRecyclerView();
         void setRecyclerView(RecyclerView recyclerView);
         ArrayList<Chat> getChats();
+        void setChats(ArrayList<Chat> chats);
         FirebaseFirestore getDatabase();
         MessengerRecyclerViewAdapter getAdapter();
         void setAdapter(MessengerRecyclerViewAdapter adapter);
