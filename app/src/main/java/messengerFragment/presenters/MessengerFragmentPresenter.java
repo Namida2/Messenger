@@ -286,16 +286,13 @@ public class MessengerFragmentPresenter implements MessengerFragmentInterface.Pr
     public void setRecyclerView(RecyclerView recyclerView) {
         model.setRecyclerView(recyclerView);
     }
-
     @Override
     public void notifyMe(Chat chat) {
         String name = Thread.currentThread().getName();
         if (model.getAdapter() == null) return;
         model.getAdapter()
             .notifyItemChanged(model.getChats().indexOf(chat));
-
     }
-
     @Override
     public void notifyChatDeleted(String chatId) {
         try {
