@@ -97,7 +97,7 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter, M
             .collection(COLLECTION_USERS);
 
         model.getDatabase().runTransaction(transaction -> {
-            Long messagesInChat = 0L;
+            Long messagesInChat = 1L;
             if (model.getChat().getMessages().size() != 1)
                 messagesInChat = ((Long) transaction.get(docRefChat).getData().get(FIELD_MESSAGES_IN_CHAT)) + 1;
 
@@ -115,8 +115,8 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter, M
                     .collection(COLLECTION_CHATS).document(chat.getChatId());
                 data = new HashMap<>();
                 data.put(FIELD_CHAT_NAME, chat.getChatName());
-                data.put(FIELD_LAST_MESSAGE_AT, messagesInChat);
-                data.put(FIELD_MESSAGES_IN_CHAT, chat.getMessages().size());
+                data.put(FIELD_LAST_MESSAGE_AT, chat.getMessages().get(chat.getMessages().size()-1).getTime());
+                data.put(FIELD_MESSAGES_IN_CHAT, messagesInChat);
                 data.put(FIELD_TYPE, chat.getType());
                 List<String> listUsers = new ArrayList<>();
                 for(UserInterface chatUser : chat.getUsers()) {
@@ -139,7 +139,7 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter, M
             if( task.isSuccessful() ) {
                 model.getChat().setMessagesInChat((long) model.getChat().getMessages().size());
             } else {
-                Log.d(TAG, "MessengerFragmentPresenter.sendMessage: " + task.getException());
+                Log.d(TAG, "ChatActivityPresenter.sendMessage: " + task.getException());
                 view.onError(ErrorAlertDialog.SOMETHING_WRONG);
             }
         });
@@ -154,25 +154,52 @@ public class ChatActivityPresenter implements ChatActivityInterface.Presenter, M
 
     @Override
     public void onDestroy() {
-        if(messengerModel.getChats().get(position).getMessages().size() == 0)
-            messengerModel.getChats().remove(position);
+        try {
+            if(messengerModel.getChats().get(position).getMessages().size() == 0)
+                messengerModel.getChats().remove(position);
+        } catch (Exception e) {
+            Log.d(TAG, "ChatActivityPresenter.onDestroy: " + e.getMessage());
+        }
     }
 
     @Override
     public Bitmap getDialogBitmap() {
-        return model.getChat().getUsers().get(
-            model.getChat().getUsers().size()-1
-        ).getAvatar();
+        Bitmap bitmap = null;
+        for(UserInterface user : model.getChat().getUsers()) {
+            if(!user.getEmail().equals(User.getCurrentUser().getEmail())){
+                bitmap = user.getAvatar();
+            }
+        }
+        return bitmap;
+    }
+
+    @Override
+    public String getDialogName() {
+        String name = "";
+        for(UserInterface user : model.getChat().getUsers()) {
+            if(!user.getEmail().equals(User.getCurrentUser().getEmail())){
+                name = user.getName();
+            }
+        }
+        return name;
     }
 
     @Override
     public void notifyMe(Chat chat) {
-        String name = Thread.currentThread().getName();
+        //String name = Thread.currentThread().getName();
         if(model.getChat().equals(chat)) {
            model.getAdapter().notifyDataSetChanged();
            view.scrollToPosition(model.getRecyclerView(), chat.getMessages().size() - 1);
         }
 
+    }
+
+    @Override
+    public void notifyChatDeleted(String chatId) {
+        if(model.getChat().getChatId().equals(chatId)) {
+            model.getAdapter().clearChat();
+            view.onError(ErrorAlertDialog.MESSAGES_HAVE_BEEN_DELETED);
+        }
     }
 
 }

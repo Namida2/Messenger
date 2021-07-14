@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.messenger.Chat;
 import com.example.messenger.interfaces.UserInterface;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
 
@@ -24,6 +25,7 @@ public interface MessengerFragmentInterface {
     }
     interface View {
         void startChatActivity(int position);
+        void showAcceptOrCancelDialog(int position, String title);
     }
     interface Presenter {
         void onResume();
@@ -32,5 +34,6 @@ public interface MessengerFragmentInterface {
         void setModelState(UserInterface user);
         android.view.View getView(MessengerFragmentInterface.View view);
         void setView(android.view.View view);
+        void removeChatFromDatabase(int position);
     }
 }

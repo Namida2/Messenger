@@ -7,7 +7,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.User;
 import com.example.messenger.interfaces.BaseInterface;
+import com.example.messenger.interfaces.UserInterface;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
 
 import adapters.UsersRecyclerViewAdapter;
 import mainFragment.interfaces.MainFragmentInterface;
@@ -33,6 +36,18 @@ public class MainFragmentPresenter implements MainFragmentInterface.Presenter {
             setModelState();
         }
     }
+
+    @Override
+    public void showUsers(String name) {
+        ArrayList<UserInterface> currentUsers = new ArrayList<>();
+        for(UserInterface user : model.getUsersList()) {
+            if(user.getName().contains(name))
+                currentUsers.add(user);
+        }
+        model.getAdapter().setUsersList(currentUsers);
+        model.getAdapter().notifyDataSetChanged();
+    }
+
     @Override
     public void onResume() {
         if(model.getAdapter() == null) return;
@@ -52,7 +67,6 @@ public class MainFragmentPresenter implements MainFragmentInterface.Presenter {
                         user.setAvatar(fromBase64(user.getAvatarString()));
                         model.getUsersList().add(user);
                     }
-                    model.getAdapter().setUsersList(model.getUsersList());
                     if (model.getRecyclerView() == null) return;
                     model.getRecyclerView().setAdapter(model.getAdapter());
                 } else {

@@ -27,6 +27,9 @@
     <string name="error_alert_dialog_too_big_image_title">Изображение слишком большое</string>
     <string name="error_alert_dialog_too_big_image_text">Попробуйте загрузить другое изображение.</string>
 
+    <string name="error_alert_dialog_messages_have_been_deleted_title">Сообщения удалдены</string>
+    <string name="error_alert_dialog_messages_have_been_deleted_text">Сообщения в этом чате были удалены собеседником. Это чат больше не доступен.</string>
+
     <string name="main">Главная</string>
     <string name="messenger">Мессенджер</string>
     <string name="profile">Профиль</string>

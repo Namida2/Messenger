@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,6 +49,7 @@ public class ChatActivity extends AppCompatActivity implements ChatActivityInter
         ImageView imageView = findViewById(R.id.avatar_image_view);
         imageView.setClipToOutline(true);
         imageView.setImageBitmap(presenter.getDialogBitmap());
+        ( (TextView) findViewById(R.id.user_name_text_view)).setText(presenter.getDialogName());
         messageEditText = findViewById(R.id.message_edit_text);
         sendButton = findViewById(R.id.send_button);
         RxView.clicks(sendButton)
@@ -84,9 +86,13 @@ public class ChatActivity extends AppCompatActivity implements ChatActivityInter
     }
     @Override
     public void onError(int errorCode) {
-        if(!ErrorAlertDialog.isIsExist())
-            ErrorAlertDialog.getInstance(errorCode)
-                .show(getSupportFragmentManager(), "");
+        try {
+            if(!ErrorAlertDialog.isIsExist())
+                ErrorAlertDialog.getInstance(errorCode)
+                    .show(getSupportFragmentManager(), "");
+        } catch (Exception e) {
+            Log.d(TAG, "ChatActivity.onError: " + e.getMessage());
+        }
     }
 
     @Override

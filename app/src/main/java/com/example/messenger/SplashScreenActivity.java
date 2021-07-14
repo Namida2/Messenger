@@ -14,6 +14,7 @@ import com.example.messenger.presenters.SplashScreenActivityPresenter;
 import messengerFragment.models.MessengerFragmentModel;
 import registration.LogInActivity;
 import tools.ErrorAlertDialog;
+import tools.NetworkConnection;
 
 import static tools.Const.TAG;
 
@@ -26,6 +27,10 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashScr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         Log.d(TAG, "SplashScreenActivity: " );
+        if(!NetworkConnection.isNetworkConnected(this)) {
+            onError(ErrorAlertDialog.INTERNET_CONNECTION);
+            return;
+        }
         if( !MessagesListenerService.isExits() ) {
             MessagesListenerService.setOnCrateConsumer(accept -> {
                 presenter = new SplashScreenActivityPresenter(this,this);

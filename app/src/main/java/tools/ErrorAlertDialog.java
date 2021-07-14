@@ -33,6 +33,7 @@ public class ErrorAlertDialog extends DialogFragment {
     public static final int EMPTY_FIELD = 6;
     public static final int SOMETHING_WRONG = 7;
     public static final int TOO_BIG_IMAGE = 8;
+    public static final int MESSAGES_HAVE_BEEN_DELETED = 9;
 
     private Consumer<Object> acceptAction;
     private static final AtomicBoolean isExist = new AtomicBoolean(false);
@@ -102,6 +103,10 @@ public class ErrorAlertDialog extends DialogFragment {
             case TOO_BIG_IMAGE:
                 title.setText(R.string.error_alert_dialog_too_big_image_title);
                 text.setText(R.string.error_alert_dialog_too_big_image_text);
+                break;
+            case MESSAGES_HAVE_BEEN_DELETED:
+                title.setText(R.string.error_alert_dialog_messages_have_been_deleted_title);
+                text.setText(R.string.error_alert_dialog_messages_have_been_deleted_text);
                 break;
         }
         builder.setView(view);

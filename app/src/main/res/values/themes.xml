@@ -14,6 +14,21 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="acceptButtonSetDishReady" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/bg_accept_button_dialog</item>
+        <item name="rippleColor">@color/black</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.ErrorButtonStyle.</item>
+    </style>
+    <style name="cancelButtonSetDishReady" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/bg_cancel_button_dialog</item>
+        <item name="rippleColor">@color/black</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.ErrorButtonStyle.</item>
+    </style>
+
+    <style name="ThemeOverlay.App.ErrorButtonStyle." parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="colorPrimary">@color/white</item>
+    </style>
+
 
     <style name="Widget.App.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>

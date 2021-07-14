@@ -34,6 +34,7 @@ public class MessengerRecyclerViewAdapter extends RecyclerView.Adapter<Messenger
 
     private ArrayList<Chat> chats;
     private Consumer<Integer> acceptChatConsumer;
+    private Consumer<Integer> deleteChatConsumer;
 
     public MessengerRecyclerViewAdapter (ArrayList<Chat> chats) {
         this.chats = chats;
@@ -41,6 +42,9 @@ public class MessengerRecyclerViewAdapter extends RecyclerView.Adapter<Messenger
 
     public void setAcceptChatConsumer(Consumer<Integer> acceptChatConsumer) {
         this.acceptChatConsumer = acceptChatConsumer;
+    }
+    public void setDeleteChatConsumer(Consumer<Integer> deleteChatConsumer) {
+        this.deleteChatConsumer = deleteChatConsumer;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -81,6 +85,14 @@ public class MessengerRecyclerViewAdapter extends RecyclerView.Adapter<Messenger
                     holder.avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 }
         }
+
+        RxView.longClicks(holder.container)
+            .debounce(150, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(unit -> {
+                deleteChatConsumer.accept(position);
+            });
+
         RxView.clicks(holder.container)
             .debounce(150, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())

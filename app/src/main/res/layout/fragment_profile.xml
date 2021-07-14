@@ -37,7 +37,6 @@
             android:textColor="@color/black"
             android:textSize="16sp" />
 
-
         <EditText
             android:layout_toRightOf="@id/name"
             android:id="@+id/user_name_text_view"
@@ -86,7 +85,6 @@
             android:textColor="@color/black"
             android:textSize="16sp" />
 
-
             <TextView
                 android:layout_marginTop="10dp"
                 android:id="@+id/city"
@@ -117,7 +115,6 @@
                 android:textColor="@color/black"
                 android:gravity="center"
                 android:fontFamily="@font/montserrat_regular"/>
-
 
             <TextView
                 android:id="@+id/age"
@@ -201,6 +198,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="100dp"
             android:gravity="center"
             android:textColor="@color/black"
             android:paddingStart="24dp"

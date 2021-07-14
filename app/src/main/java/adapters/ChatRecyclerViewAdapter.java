@@ -20,11 +20,17 @@ import tools.Animations;
 
 public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerViewAdapter.ViewHolder> {
 
-    private final Chat chat;
+    private Chat chat;
 
     public ChatRecyclerViewAdapter (Chat chat) {
         this.chat = chat;
     }
+
+    public void clearChat() {
+        this.chat = new Chat();
+        this.notifyDataSetChanged();
+    }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public RelativeLayout container;

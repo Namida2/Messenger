@@ -1,5 +1,7 @@
 package com.example.messenger;
 
+import androidx.annotation.Nullable;
+
 public class Message {
 
     private String authorEmail;
@@ -38,5 +40,17 @@ public class Message {
     }
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable @org.jetbrains.annotations.Nullable Object obj) {
+        if(obj == null || obj.getClass() != Message.class) return false;
+        Message message = (Message) obj;
+        return message.getId().equals(this.id);
     }
 }

@@ -6,6 +6,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -16,6 +18,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.util.Consumer;
 
 import com.example.messenger.interfaces.MessagesObservable;
+import com.example.messenger.interfaces.UserInterface;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -73,26 +76,10 @@ public class MessagesListenerService extends Service implements MessagesObservab
             this.messagesInChat = messagesInChat;
         }
     }
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public void myStartForeground() {
-        Intent intent = new Intent(this, SplashScreenActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        Notification notification = new NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_email)
-            .setColor(getResources().getColor(R.color.fui_transparent))
-            .setContentTitle("Служба уведоблений DOMO")
-            .setDefaults(NotificationCompat.DEFAULT_SOUND)
-            .setAutoCancel(false)
-            .setContentIntent(pendingIntent)
-            .build();
-        startForeground(777, notification);
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onCreate() {
-        //myStartForeground();
         service = this;
         isExist.set(true);
         notificationManager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
@@ -174,9 +161,25 @@ public class MessagesListenerService extends Service implements MessagesObservab
                         return;
                     }
                     Set<String> newChatIds = new HashSet<>(chatIds);
-                    newChatIds.removeAll(user.getMyChatIds());
-                    if(newChatIds.iterator().hasNext())
-                        readChat(newChatIds.iterator().next());
+                    if(newChatIds.size() < user.getMyChatIds().size()) {
+                        newChatIds = new HashSet<>(user.getMyChatIds());
+                        newChatIds.removeAll(chatIds);
+                        if(!newChatIds.iterator().hasNext()) return;
+                        String next = newChatIds.iterator().next();
+                        user.getMyChatIds().remove(next);
+                        notifySubscribersChatDeleted(next);
+                    } else {
+                        newChatIds.removeAll(user.getMyChatIds());
+
+                        if(!newChatIds.iterator().hasNext()) return;
+
+                        String next = newChatIds.iterator().next();
+                        if (newChatIds.iterator().hasNext())
+                            readChat(next);
+                        if(!user.getMyChatIds().contains(next)) {
+                            user.getMyChatIds().add(next);
+                        }
+                    }
                 }
             });
     }
@@ -192,7 +195,6 @@ public class MessagesListenerService extends Service implements MessagesObservab
             chat.setChatName( (String) docSnapshotChat.getData().get(FIELD_CHAT_NAME));
             chat.setMessagesInChat( (Long) docSnapshotChat.getData().get(FIELD_MESSAGES_IN_CHAT));
             chat.setLastMessageAt( (String) docSnapshotChat.getData().get(FIELD_LAST_MESSAGE_AT));
-            chat.setLastMessageAt( (String) docSnapshotChat.getData().get(FIELD_LAST_MESSAGE_AT));
 
             List<String> usersInChat = (List<String>) docSnapshotChat.getData().get(FIELD_USERS);
             for(String userName : usersInChat) {
@@ -201,8 +203,9 @@ public class MessagesListenerService extends Service implements MessagesObservab
                 user.setAvatar( fromBase64(user.getAvatarString()) );
                 chat.getUsers().add(user);
             }
-            if(!chats.contains(chat))
+            if(!chats.contains(chat)) {
                 chats.add(chat);
+            }
             readMessages(chat);
             return chat;
         }).addOnCompleteListener(task -> {
@@ -224,14 +227,21 @@ public class MessagesListenerService extends Service implements MessagesObservab
                         message.setId( Long.parseLong(queryDocumentSnapshot.getId()) );
                         chat.getMessages().add(message);
                     }
-                    ArrayList<Message> messages = chat.getMessages();
                     Collections.sort(chat.getMessages(),
                         (message1, message2) -> (int) (message1.getId() - message2.getId()));
+                    if(chat.getMessages().size() == 0) return;
                     Message message = chat.getMessages().get(chat.getMessages().size()-1);
                     notifySubscribers(chat);
                     startMessagesListening(chats);
-                    if(!message.getAuthorEmail().equals(User.getCurrentUser().getEmail()))
-                        showNotification( message.getAuthorName(), message.getMessage() );
+                    if(!message.getAuthorEmail().equals(User.getCurrentUser().getEmail())) {
+                        Bitmap bitmap = null;
+                        for(UserInterface user : chat.getUsers()) {
+                            if(message.getAuthorEmail().equals(user.getEmail())){
+                                bitmap = user.getAvatar();
+                            }
+                        }
+                        showNotification(message.getAuthorName(), message.getMessage(), bitmap);
+                    }
                 } else {
                     Log.d(TAG, "MessagesListenerService.readChat: " + task.getException());
                 }
@@ -247,10 +257,19 @@ public class MessagesListenerService extends Service implements MessagesObservab
                     .collection(COLLECTION_MESSAGES)
                     .document(Long.toString(i));
                 Message message = transaction.get(docRefMessage).toObject(Message.class);
-                chat.getMessages().add( message );
-                addSize.incrementAndGet();
-                if(!message.getAuthorEmail().equals(User.getCurrentUser().getEmail()))
-                    showNotification(message.getAuthorName(), message.getMessage());
+                if(!message.getAuthorEmail().equals(User.getCurrentUser().getEmail()) && !chat.getMessages().contains(message)) {
+                    Bitmap bitmap = null;
+                    for(UserInterface user : chat.getUsers()) {
+                        if(message.getAuthorEmail().equals(user.getEmail())){
+                            bitmap = user.getAvatar();
+                        }
+                    }
+                    showNotification(message.getAuthorName(), message.getMessage(), bitmap);
+                }
+                if(!chat.getMessages().contains(message)) {
+                    chat.getMessages().add( message );
+                    addSize.incrementAndGet();
+                }
             }
             return true;
         }).addOnCompleteListener(task -> {
@@ -271,14 +290,13 @@ public class MessagesListenerService extends Service implements MessagesObservab
         }
         subscribers.add(subscriber);
     }
-    public void showNotification(String title, String name) {
-        //Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification);
+    public void showNotification(String title, String name, Bitmap icon) {
         Intent intent = new Intent(this, SplashScreenActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         Notification notification = new NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_email)
-            //.setLargeIcon(icon)
+            .setLargeIcon(icon)
             .setColor(getResources().getColor(R.color.fui_transparent))
             .setContentTitle(title)
             .setContentText(name)
@@ -315,6 +333,13 @@ public class MessagesListenerService extends Service implements MessagesObservab
     public void notifySubscribers(Chat chat) {
         for(MessagesObservable.Subscriber subscriber : subscribers) {
             subscriber.notifyMe(chat);
+        }
+    }
+
+    @Override
+    public void notifySubscribersChatDeleted(String chatId) {
+        for(MessagesObservable.Subscriber subscriber : subscribers) {
+            subscriber.notifyChatDeleted(chatId);
         }
     }
 

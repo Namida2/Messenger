@@ -1,9 +1,12 @@
 package mainFragment;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +17,7 @@ import com.example.messenger.R;
 import com.example.messenger.interfaces.BaseInterface;
 import com.example.messenger.interfaces.UserInterface;
 import com.jakewharton.rxbinding4.view.RxView;
+import com.jakewharton.rxbinding4.widget.RxTextView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +39,18 @@ public class MainFragment extends Fragment implements MainFragmentInterface.View
         if (contentView != null) return;
         contentView = View.inflate(getContext(), R.layout.fragment_main, null);
         presenter.setRecyclerView(contentView.findViewById(R.id.users_recycler_view));
+
+        ( (EditText) contentView.findViewById(R.id.user_name_edit_text)).addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                presenter.showUsers(s.toString());
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
+
         presenter.setView(contentView);
     }
 

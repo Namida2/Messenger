@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import messengerFragment.interfaces.MessengerFragmentInterface;
 import messengerFragment.presenters.MessengerFragmentPresenter;
+import tools.AcceptOrCancelAlertDialog;
 import tools.ErrorAlertDialog;
 
 import static tools.Const.EXTRA_TAG_POSITION;
@@ -51,6 +52,15 @@ public class MessengerFragment extends Fragment implements MessengerFragmentInte
         intent.putExtra(EXTRA_TAG_POSITION, position);
         startActivity(intent);
     }
+
+    @Override
+    public void showAcceptOrCancelDialog(int position, String title) {
+        new AcceptOrCancelAlertDialog(accept -> {
+            presenter.removeChatFromDatabase(position);
+        }, title, null).show(getActivity().getSupportFragmentManager(), "");
+    }
+
+
     @Override
     public void onSuccess() {
         try {

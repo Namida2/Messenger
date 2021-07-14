@@ -30,6 +30,7 @@ public interface ChatActivityInterface {
         int getLastAdapterPosition();
         void onDestroy();
         Bitmap getDialogBitmap();
+        String getDialogName();
     }
 
 }

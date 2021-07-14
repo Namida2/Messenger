@@ -13,9 +13,11 @@ public interface MessagesObservable {
         void subscribe(Subscriber subscriber);
         void unSubscribe(Subscriber subscriber);
         void notifySubscribers(Chat chat);
+        void notifySubscribersChatDeleted(String chatId);
     }
     interface Subscriber {
         void notifyMe(Chat chat);
+        void notifyChatDeleted(String chatId);
     }
 
 }
